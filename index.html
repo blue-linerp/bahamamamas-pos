@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Bahama Mamas — POS System V1.0.3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Bebas+Neue&family=Montserrat:wght@300;400;500;600&display=swap');
+
+  :root {
+    --black: #050508;
+    --deep: #0d0b12;
+    --card: #120f1a;
+    --panel: #160d22;
+    --magenta: #cc00cc;
+    --magenta-bright: #ff00ff;
+    --magenta-glow: rgba(204,0,204,0.35);
+    --magenta-dim: #660066;
+    --pink: #ff66cc;
+    --pink-light: #ffaaee;
+    --pink-pale: rgba(255,102,204,0.15);
+    --white: #f8f0ff;
+    --white-dim: #a090b8;
+    --border: rgba(204,0,204,0.22);
+    --border-hover: rgba(255,0,255,0.55);
+    --leo-green: #39d98a;
+    --leo-bg: rgba(57,217,138,0.1);
+    --ems-blue: #44bbff;
+    --ems-bg: rgba(68,187,255,0.1);
+    --budz-yellow: #f5d020;
+    --budz-bg: rgba(245,208,32,0.1);
+    --red: #ff6b6b;
+    --red-bg: rgba(255,107,107,0.1);
+    --warn: #ffaa44;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    font-family: 'Montserrat', sans-serif;
+    color: var(--white);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,0,204,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 90% 50%, rgba(255,0,255,0.06) 0%, transparent 60%);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--magenta-dim); border-radius: 2px; }
+
+  /* ── Wrapper ── */
+  .pos-wrap { max-width: 1140px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 1.75rem;
+    padding: 1.25rem 100px 1.25rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    min-height: 110px;
+  }
+  .header::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--magenta-bright), transparent);
+  }
+
+  .brand-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--magenta-bright);
+    line-height: 1;
+    text-shadow:
+      0 0 20px rgba(255,0,255,0.7),
+      0 0 40px rgba(255,0,255,0.4),
+      0 0 80px rgba(255,0,255,0.2);
+    letter-spacing: 2px;
+  }
+  .brand-sub {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.45em;
+    color: var(--white-dim);
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+  .clock-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+  }
+  .clock-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    color: var(--magenta);
+  }
+  .clock-date {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--white-dim);
+    text-transform: uppercase;
+    align-self: center;
+  }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    gap: 2px;
+  }
+  .tab-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--white-dim);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab-btn:hover { color: var(--pink); }
+  .tab-btn.active { color: var(--magenta-bright); border-bottom-color: var(--magenta-bright); }
+  .tab-badge {
+    display: inline-block;
+    background: var(--magenta);
+    color: #fff;
+    font-size: 9px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Controls bar ── */
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+  .ctrl-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--white-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .ctrl-divider { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
+
+  /* ── Discount Type Buttons ── */
+  .disc-type-group { display: flex; gap: 6px; align-items: center; }
+  .disc-type-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    border-radius: 6px;
+    padding: 5px 12px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .disc-type-btn.leo { border-color: rgba(57,217,138,0.35); color: var(--leo-green); }
+  .disc-type-btn.leo:hover, .disc-type-btn.leo.active { background: var(--leo-bg); border-color: var(--leo-green); box-shadow: 0 0 8px rgba(57,217,138,0.25); }
+  .disc-type-btn.ems { border-color: rgba(68,187,255,0.35); color: var(--ems-blue); }
+  .disc-type-btn.ems:hover, .disc-type-btn.ems.active { background: var(--ems-bg); border-color: var(--ems-blue); box-shadow: 0 0 8px rgba(68,187,255,0.25); }
+  .disc-type-btn.budz { border-color: rgba(245,208,32,0.35); color: var(--budz-yellow); }
+  .disc-type-btn.budz:hover, .disc-type-btn.budz.active { background: var(--budz-bg); border-color: var(--budz-yellow); box-shadow: 0 0 8px rgba(245,208,32,0.25); }
+  .disc-type-btn.none { border-color: var(--border); color: var(--white-dim); }
+  .disc-type-btn.none:hover, .disc-type-btn.none.active { background: rgba(255,255,255,0.06); border-color: var(--white-dim); }
+
+  /* ── Manual discount ── */
+  .disc-input-wrap { display: flex; align-items: center; gap: 5px; }
+  .disc-input {
+    background: var(--deep);
+    border: 1px solid var(--border-hover);
+    border-radius: 5px;
+    color: var(--white);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    width: 52px;
+    padding: 3px 6px;
+    outline: none;
+    text-align: center;
+    -moz-appearance: textfield;
+  }
+  .disc-input::-webkit-outer-spin-button,
+  .disc-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .disc-input:focus { border-color: var(--magenta); }
+  .disc-pct-symbol { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--pink); }
+  .cust-input {
+    background: var(--deep);
+    border: 1px solid var(--border-hover);
+    border-radius: 5px;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    padding: 5px 10px;
+    outline: none;
+    width: 180px;
+    resize: vertical;
+    min-height: 32px;
+    line-height: 1.4;
+  }
+  .cust-input::placeholder { color: var(--white-dim); opacity: 0.55; }
+  .cust-input:focus { border-color: var(--magenta); }
+
+  /* ── Search ── */
+  .search-row { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .search-toggle-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--magenta-dim);
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+  }
+  .search-toggle-btn:hover, .search-toggle-btn.active { border-color: var(--border-hover); color: var(--magenta-bright); }
+  .search-toggle-label { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; }
+  .search-expand { flex: 1; position: relative; display: none; }
+  .search-expand.open { display: block; }
+  .search-input {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    padding: 9px 36px 9px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--magenta); }
+  .search-input::placeholder { color: var(--white-dim); opacity: 0.5; }
+  .search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--white-dim);
+    cursor: pointer;
+    font-size: 15px;
+    padding: 2px 4px;
+    display: none;
+  }
+  .search-clear:hover { color: var(--pink); }
+
+  /* ── Split layout ── */
+  .order-layout { display: grid; grid-template-columns: 1fr 310px; gap: 16px; align-items: start; }
+  .menu-col { min-width: 0; }
+  .order-col { position: sticky; top: 1rem; }
+
+  /* ── Section label ── */
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    color: var(--magenta);
+    text-transform: uppercase;
+    margin: 1.5rem 0 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Menu items ── */
+  .menu-list { display: flex; flex-direction: column; gap: 5px; }
+  .menu-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.1s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .menu-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,0,255,0.05) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .menu-item:hover:not(.disabled)::before { opacity: 1; }
+  .menu-item:hover:not(.disabled) { border-color: var(--border-hover); transform: translateX(2px); box-shadow: 0 0 12px rgba(255,0,255,0.08); }
+  .menu-item:active:not(.disabled) { transform: scale(0.99); }
+  .menu-item.disabled { opacity: 0.3; cursor: not-allowed; }
+  .menu-item.in-order { border-color: rgba(255,0,255,0.45); }
+  .mi-body { flex: 1; min-width: 0; }
+  .mi-name { font-size: 12px; font-weight: 600; color: var(--white); line-height: 1.3; letter-spacing: 0.03em; }
+  .mi-desc { font-size: 11px; font-style: italic; color: var(--white-dim); margin-top: 2px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 300; }
+  .mi-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .mi-price { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--pink); letter-spacing: 0.05em; }
+  .mi-qty-badge { background: var(--magenta); color: #fff; font-size: 10px; font-weight: 600; border-radius: 10px; padding: 1px 7px; }
+  .no-results { font-size: 14px; font-style: italic; color: var(--white-dim); padding: 2rem 0; text-align: center; }
+
+  /* ── Order panel ── */
+  .order-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .order-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--magenta-bright), transparent);
+  }
+  .order-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--pink);
+    text-transform: uppercase;
+    margin-bottom: 0.85rem;
+  }
+  .disc-banner {
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 11px;
+    margin-bottom: 0.75rem;
+    display: none;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  .disc-banner.leo { background: var(--leo-bg); border: 1px solid rgba(57,217,138,0.3); color: var(--leo-green); }
+  .disc-banner.ems { background: var(--ems-bg); border: 1px solid rgba(68,187,255,0.3); color: var(--ems-blue); }
+  .disc-banner.budz { background: var(--budz-bg); border: 1px solid rgba(245,208,32,0.3); color: var(--budz-yellow); }
+  .order-empty { font-size: 13px; font-style: italic; color: var(--white-dim); padding: 0.5rem 0; font-weight: 300; }
+  .order-line { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(204,0,204,0.1); }
+  .order-line:last-child { border-bottom: none; }
+  .qty-ctrl { display: flex; align-items: center; gap: 4px; }
+  .qty-btn {
+    background: rgba(255,0,255,0.08);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--magenta-bright);
+    width: 20px; height: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+    line-height: 1;
+  }
+  .qty-btn:hover { background: rgba(255,0,255,0.18); }
+  .qty-num { font-family: 'Bebas Neue', sans-serif; font-size: 16px; min-width: 18px; text-align: center; color: var(--white); }
+  .qty-input {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    width: 42px;
+    text-align: center;
+    color: var(--white);
+    background: rgba(255,0,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 4px;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .qty-input::-webkit-outer-spin-button,
+  .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .qty-input:focus { border-color: var(--magenta); background: rgba(255,0,255,0.12); }
+  .ol-name { flex: 1; font-size: 11px; font-weight: 500; color: var(--white); min-width: 0; }
+  .ol-price { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: var(--pink-light); min-width: 54px; text-align: right; }
+  .ol-free { font-size: 10px; color: var(--leo-green); background: var(--leo-bg); border-radius: 3px; padding: 1px 5px; white-space: nowrap; }
+  .totals { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid var(--border); display: none; }
+  .total-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--white-dim); letter-spacing: 0.04em; margin-bottom: 4px; }
+  .total-disc-green { color: var(--leo-green); }
+  .total-disc-blue { color: var(--ems-blue); }
+  .total-disc-yellow { color: var(--budz-yellow); }
+  .total-disc-red { color: var(--red); }
+  .total-final { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .tf-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--magenta-dim);
+    text-transform: uppercase;
+    align-self: center;
+  }
+  .tf-amount { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--magenta-bright); letter-spacing: 0.05em; }
+  .order-actions { display: none; gap: 8px; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-magenta { background: rgba(255,0,255,0.12); border-color: var(--magenta-dim); color: var(--magenta-bright); }
+  .btn-magenta:hover { background: rgba(255,0,255,0.22); box-shadow: 0 0 10px rgba(255,0,255,0.2); }
+  .btn-ghost { background: transparent; border-color: var(--border); color: var(--white-dim); }
+  .btn-ghost:hover { border-color: var(--border-hover); color: var(--white); }
+
+  /* ── Queue ── */
+  .queue-empty { font-size: 14px; font-style: italic; color: var(--white-dim); padding: 3rem 0; text-align: center; }
+  .queue-grid { display: grid; gap: 12px; }
+  .queue-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .queue-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+    transition: background 0.3s;
+  }
+  .queue-card.warn { border-color: rgba(255,170,68,0.5); }
+  .queue-card.warn::before { background: linear-gradient(90deg, transparent, var(--warn), transparent); }
+  .queue-card.late { border-color: rgba(255,107,107,0.5); }
+  .queue-card.late::before { background: linear-gradient(90deg, transparent, var(--red), transparent); }
+  .qc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .qc-num { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.25em; color: var(--magenta-dim); }
+  .qc-name { font-family: 'Dancing Script', cursive; font-size: 18px; color: var(--pink); flex: 1; }
+  .qc-pill {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(255,0,255,0.08);
+    border: 1px solid var(--magenta-dim);
+    color: var(--magenta-dim);
+    font-weight: 600;
+  }
+  .qc-pill.leo { background: var(--leo-bg); border-color: rgba(57,217,138,0.4); color: var(--leo-green); }
+  .qc-pill.ems { background: var(--ems-bg); border-color: rgba(68,187,255,0.4); color: var(--ems-blue); }
+  .qc-pill.budz { background: var(--budz-bg); border-color: rgba(245,208,32,0.4); color: var(--budz-yellow); }
+  .qc-items { font-size: 12px; color: var(--white-dim); margin-bottom: 8px; line-height: 1.7; }
+  .qc-total { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--magenta-bright); margin-bottom: 10px; letter-spacing: 0.05em; }
+  .qc-total small { font-size: 11px; color: var(--white-dim); font-family: 'Montserrat', sans-serif; margin-left: 6px; letter-spacing: 0; }
+  .qc-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-done {
+    background: var(--leo-bg); border: 1px solid rgba(57,217,138,0.4); color: var(--leo-green);
+    font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    border-radius: 5px; padding: 6px 12px; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-done:hover { background: rgba(57,217,138,0.2); }
+  .btn-edit {
+    background: rgba(255,0,255,0.08); border: 1px solid var(--magenta-dim); color: var(--magenta-bright);
+    font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    border-radius: 5px; padding: 6px 12px; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-edit:hover { background: rgba(255,0,255,0.16); }
+  .btn-del {
+    background: var(--red-bg); border: 1px solid rgba(255,107,107,0.3); color: var(--red);
+    font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    border-radius: 5px; padding: 6px 12px; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-del:hover { background: rgba(255,107,107,0.18); }
+  .qc-footer { margin-top: 8px; }
+  .qc-timer { font-size: 11px; color: var(--white-dim); letter-spacing: 0.05em; }
+  .qc-timer.warn { color: var(--warn); }
+  .qc-timer.late { color: var(--red); }
+
+  /* ── Modal ── */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(5,0,12,0.88); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border-hover);
+    border-radius: 14px;
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--magenta-bright), transparent);
+  }
+  .modal-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 22px;
+    color: var(--pink);
+    margin-bottom: 1.25rem;
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none;
+    color: var(--white-dim); font-size: 18px; cursor: pointer;
+  }
+  .modal-close:hover { color: var(--pink); }
+  .modal-section {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: var(--magenta-dim);
+    text-transform: uppercase;
+    margin: 1.1rem 0 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .modal-section::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .modal-menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+  .modal-menu-grid::-webkit-scrollbar { width: 3px; }
+  .modal-menu-grid::-webkit-scrollbar-thumb { background: var(--magenta-dim); border-radius: 2px; }
+  .modal-item { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; cursor: pointer; transition: border-color 0.15s; }
+  .modal-item:hover { border-color: var(--border-hover); }
+  .modal-item.in-order { border-color: rgba(255,0,255,0.5); }
+  .modal-mi-name { font-size: 11px; font-weight: 600; color: var(--white); }
+  .modal-mi-price { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: var(--pink); margin-top: 2px; }
+  .modal-order-lines { margin-bottom: 0.5rem; }
+  .modal-ol { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(204,0,204,0.1); }
+  .modal-ol:last-child { border-bottom: none; }
+  .modal-ol-name { flex: 1; font-size: 12px; color: var(--white); }
+  .modal-ol-price { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: var(--pink-light); min-width: 54px; text-align: right; }
+  .modal-totals { padding-top: 0.75rem; border-top: 1px solid var(--border); margin-top: 0.5rem; }
+  .modal-total-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--white-dim); margin-bottom: 3px; }
+  .modal-total-final { display: flex; justify-content: space-between; margin-top: 8px; }
+  .modal-tf-label { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.2em; color: var(--magenta-dim); text-transform: uppercase; align-self: center; }
+  .modal-tf-amount { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--magenta-bright); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+  /* ── Shift / Stats ── */
+  .date-nav {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px;
+  }
+  .date-nav-arrow {
+    background: none; border: 1px solid var(--border); border-radius: 5px;
+    color: var(--magenta-dim); font-size: 16px; width: 32px; height: 32px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+  }
+  .date-nav-arrow:hover:not(:disabled) { border-color: var(--magenta); color: var(--magenta-bright); }
+  .date-nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+  .date-nav-label {
+    flex: 1; text-align: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.25em;
+    color: var(--pink); text-transform: uppercase;
+  }
+  .date-nav-sub { font-size: 10px; color: var(--white-dim); font-family: 'Montserrat', sans-serif; letter-spacing: 0.05em; text-transform: none; display: block; margin-top: 2px; }
+  .shift-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .stat-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 10px; text-align: center;
+  }
+  .stat-label { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--white-dim); margin-bottom: 8px; line-height: 1.4; }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--magenta-bright); line-height: 1; letter-spacing: 0.05em; }
+  .stat-value.green { color: var(--leo-green); }
+
+  /* Commission breakdown */
+  .comm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .comm-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 14px; text-align: center;
+  }
+  .comm-label { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--white-dim); margin-bottom: 6px; }
+  .comm-pct { font-family: 'Bebas Neue', sans-serif; font-size: 11px; color: var(--white-dim); margin-bottom: 4px; letter-spacing: 0.15em; }
+  .comm-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.05em; }
+  .comm-value.house-c { color: var(--magenta-bright); }
+  .comm-value.emp-c { color: var(--leo-green); }
+
+  .receipts-label {
+    font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 0.35em;
+    color: var(--magenta-dim); text-transform: uppercase; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .receipts-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .receipt-empty { font-size: 14px; font-style: italic; color: var(--white-dim); padding: 2rem 0; text-align: center; }
+  .receipt-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+  }
+  .rc-num { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.25em; color: var(--magenta-dim); flex-shrink: 0; }
+  .rc-body { flex: 1; min-width: 0; }
+  .rc-name { font-size: 13px; font-weight: 600; color: var(--white); }
+  .rc-meta { font-size: 10px; color: var(--white-dim); margin-top: 2px; letter-spacing: 0.05em; }
+  .rc-items { font-size: 11px; color: var(--white-dim); font-style: italic; margin-top: 3px; }
+  .rc-right { flex-shrink: 0; text-align: right; }
+  .rc-total { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--magenta-bright); letter-spacing: 0.05em; }
+  .btn-danger-sm {
+    background: var(--red-bg); border: 1px solid rgba(255,107,107,0.3); color: var(--red);
+    font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    border-radius: 4px; padding: 3px 8px; cursor: pointer; margin-top: 5px; transition: background 0.15s;
+  }
+  .btn-danger-sm:hover { background: rgba(255,107,107,0.18); }
+
+  /* ── Header palm symbols ── */
+  .palm-wrap {
+    position: relative;
+  }
+  .palm-symbol {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 48px;
+    line-height: 1;
+    pointer-events: none;
+    filter:
+      drop-shadow(0 0 6px rgba(255,0,255,0.8))
+      drop-shadow(0 0 14px rgba(255,0,255,0.5));
+    opacity: 0.85;
+  }
+  .palm-symbol.left  { left: 18px; }
+  .palm-symbol.right { right: 18px; }
+
+  /* ── Block Budz ad banner ── */
+  .budz-ad {
+    background: linear-gradient(135deg, #030e03 0%, #071a07 40%, #030e03 100%);
+    border: 1px solid rgba(57,200,57,0.5);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    box-shadow: 0 0 20px rgba(57,200,57,0.12), inset 0 0 40px rgba(0,0,0,0.4);
+  }
+  .budz-ad::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 10% 50%, rgba(57,200,57,0.1) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 90% 50%, rgba(100,255,100,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .budz-ad-logo {
+    width: 110px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    background: rgba(0,0,0,0.3);
+    border-right: 1px solid rgba(57,200,57,0.25);
+    position: relative;
+  }
+  .budz-logo-svg { width: 90px; height: 100px; filter: drop-shadow(0 0 10px rgba(57,255,57,0.7)); }
+  .budz-ad-body {
+    flex: 1;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+  }
+  .budz-ad-partner {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.45em;
+    color: rgba(57,200,57,0.7);
+    text-transform: uppercase;
+  }
+  .budz-ad-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.15em;
+    color: #7fff00;
+    text-shadow: 0 0 10px rgba(100,255,0,0.5);
+    line-height: 1;
+  }
+  .budz-ad-deals {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .budz-deal-chip {
+    background: rgba(57,200,57,0.12);
+    border: 1px solid rgba(57,200,57,0.4);
+    border-radius: 6px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .budz-deal-icon { font-size: 16px; }
+  .budz-deal-info {}
+  .budz-deal-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: #a8ff70;
+  }
+  .budz-deal-price {
+    font-size: 10px;
+    color: rgba(168,255,112,0.7);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .budz-ad-cta {
+    font-size: 10px;
+    color: rgba(57,200,57,0.55);
+    font-style: italic;
+    font-weight: 300;
+  }
+  .budz-smoke {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 32px;
+    opacity: 0.25;
+    pointer-events: none;
+    animation: smokedrift 4s ease-in-out infinite alternate;
+  }
+  @keyframes smokedrift {
+    from { opacity: 0.15; transform: translateY(-52%) rotate(-5deg); }
+    to   { opacity: 0.35; transform: translateY(-48%) rotate(5deg); }
+  }
+
+  /* ── Joints & Lighters callout ── */
+  .special-callout {
+    background: linear-gradient(135deg, rgba(245,208,32,0.08) 0%, rgba(255,0,255,0.06) 100%);
+    border: 1px solid rgba(245,208,32,0.3);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .special-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .special-icon { font-size: 20px; }
+  .special-name { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 0.2em; color: var(--budz-yellow); }
+  .special-price { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: var(--white-dim); letter-spacing: 0.1em; }
+  .special-divider { width: 1px; background: rgba(245,208,32,0.2); flex-shrink: 0; }
+
+  /* ── Mobile ── */
+  .mobile-handle { display: none; }
+  @media (max-width: 720px) {
+    .brand-name { font-size: 38px; }
+    .order-layout { grid-template-columns: 1fr; }
+    .order-col { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; max-height: 60vh; overflow-y: auto; border-radius: 14px 14px 0 0; }
+    .order-col.collapsed { max-height: 52px; overflow: hidden; }
+    .mobile-handle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px 6px; cursor: pointer;
+      font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.2em;
+      color: var(--pink);
+    }
+    .shift-stats { grid-template-columns: repeat(2, 1fr); }
+    .menu-col { padding-bottom: 60px; }
+    .controls-bar { flex-direction: column; align-items: flex-start; }
+    .special-callout { flex-direction: column; gap: 10px; }
+    .special-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="pos-wrap">
+
+  <!-- ── Header ── -->
+  <div class="header palm-wrap">
+    <span class="palm-symbol left">🌴</span>
+    <span class="palm-symbol right">🌴</span>
+    <div class="brand-name">Bahama Mamas</div>
+    <div class="brand-sub">Bar &amp; Club · Point of Sale System</div>
+    <div class="clock-row">
+      <span class="clock-time" id="clock-time">--:--:--</span>
+      <span class="clock-date" id="clock-date"></span>
+    </div>
+  </div>
+
+  <!-- ── Tabs ── -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('order', this)">Order</button>
+    <button class="tab-btn" onclick="switchTab('queue', this)">Queue <span class="tab-badge" id="queue-badge" style="display:none"></span></button>
+    <button class="tab-btn" onclick="switchTab('shift', this)">Shift</button>
+  </div>
+
+  <!-- ══════════ ORDER TAB ══════════ -->
+  <div class="tab-panel active" id="tab-order">
+
+    <!-- Controls -->
+    <div class="controls-bar">
+      <span class="ctrl-label">Customer</span>
+      <textarea class="cust-input" id="cust-name" placeholder="Name / table / notes…" autocomplete="off" rows="1"></textarea>
+
+      <div class="ctrl-divider"></div>
+
+      <span class="ctrl-label">Discount</span>
+      <div class="disc-type-group">
+        <button class="disc-type-btn none active" id="disc-none" onclick="setDiscType('none')">None</button>
+        <button class="disc-type-btn leo" id="disc-leo" onclick="setDiscType('leo')">LEO 30%</button>
+        <button class="disc-type-btn ems" id="disc-ems" onclick="setDiscType('ems')">EMS 25%</button>
+        <button class="disc-type-btn budz" id="disc-budz" onclick="setDiscType('budz')">Block Budz 20%</button>
+      </div>
+
+      <div class="ctrl-divider"></div>
+
+      <span class="ctrl-label">Extra&nbsp;%</span>
+      <div class="disc-input-wrap">
+        <input class="disc-input" id="disc-input" type="number" min="0" max="100" placeholder="0" oninput="updateDiscount(this.value)">
+        <span class="disc-pct-symbol">%</span>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-row">
+      <button class="search-toggle-btn" id="search-toggle" onclick="toggleSearch()">
+        <span>🔍</span><span class="search-toggle-label">Search</span>
+      </button>
+      <div class="search-expand" id="search-expand">
+        <input class="search-input" id="search-input" type="text" placeholder="Search menu…" oninput="onSearch(this.value)" autocomplete="off">
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+      </div>
+    </div>
+
+    <!-- Block Budz Partner Ad -->
+    <div class="budz-ad">
+      <div class="budz-ad-logo">
+        <!-- Cannabis leaf SVG (user v2) -->
+        <svg
+  class="budz-logo-svg"
+  viewBox="0 0 100 120"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <linearGradient id="leafFill" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#8fcb84" />
+      <stop offset="45%" stop-color="#6fa467" />
+      <stop offset="100%" stop-color="#4f7f49" />
+    </linearGradient>
+    <linearGradient id="stemFill" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#8abf79" />
+      <stop offset="100%" stop-color="#5f8f57" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.18" />
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <!-- stem -->
+    <path
+      d="M49.2 116 C49.5 108, 49.8 100, 50 92 C50.1 86, 50.2 81, 50.4 76 C50.7 75.2, 51.6 75.2, 51.8 76 C51.9 81, 52 86, 52.1 92 C52.3 100, 52.6 108, 52.9 116 C52.1 117.2, 50 117.4, 49.2 116 Z"
+      fill="url(#stemFill)" stroke="#5a7a54" stroke-width="0.5"
+    />
+    <!-- center blade -->
+    <path
+      d="M50.7 77 C47.8 69, 46.4 59, 46 47 C45.8 34, 47.2 20, 50.1 8 C50.3 6.8, 51.6 6.8, 51.9 8 C54.8 20, 56.2 34, 56 47 C55.7 59, 54.1 69, 51.2 77 C51 77.7, 50.9 77.7, 50.7 77 Z"
+      fill="url(#leafFill)" stroke="#5d7755" stroke-width="0.6"
+    />
+    <!-- upper left inner -->
+    <path
+      d="M50.4 77 C47.4 69.5, 43.8 61, 39.5 51 C36.2 41.5, 34.2 31.2, 33.8 18 C38 24, 41.8 31.4, 45.6 40.2 C48.1 50.2, 49.7 62, 50.9 76.4 C50.9 77.2, 50.6 77.5, 50.4 77 Z"
+      fill="url(#leafFill)" stroke="#5d7755" stroke-width="0.6"
+    />
+    <!-- upper right inner -->
+    <path
+      d="M51.6 77 C54.6 69.5, 58.2 61, 62.5 51 C65.8 41.5, 67.8 31.2, 68.2 18 C64 24, 60.2 31.4, 56.4 40.2 C53.9 50.2, 52.3 62, 51.1 76.4 C51.1 77.2, 51.4 77.5, 51.6 77 Z"
+      fill="url(#leafFill)" stroke="#5d7755" stroke-width="0.6"
+    />
+    <!-- outer left upper -->
+    <path
+      d="M49.9 78 C43.8 72, 36.6 64.8, 28.2 56.4 C21.4 48.2, 16.9 39.1, 14 27.4 C20.1 31.4, 26.6 36.6, 33.4 42.9 C40.4 51.8, 46.1 62.9, 50.4 77.2 C50.4 78, 50.1 78.3, 49.9 78 Z"
+      fill="url(#leafFill)" stroke="#5d7755" stroke-width="0.6"
+    />
+    <!-- outer right upper -->
+    <path
+      d="M52.1 78 C58.2 72, 65.4 64.8, 73.8 56.4 C80.6 48.2, 85.1 39.1, 88 27.4 C81.9 31.4, 75.4 36.6, 68.6 42.9 C61.6 51.8, 55.9 62.9, 51.6 77.2 C51.6 78, 51.9 78.3, 52.1 78 Z"
+      fill="url(#leafFill)" stroke="#5d7755" stroke-width="0.6"
+    />
+    <!-- lower left -->
+    <path
+      d="M49.8 79.2 C42.2 76.8, 33.7 74.9, 24.2 73.4 C16.8 71.4, 10.4 67.8, 5.2 61.8 C12.1 62.2, 19.6 63.3, 27.8 65 C36.5 68.1, 43.8 72.3, 50.3 78.6 C50.5 79.2, 50.1 79.4, 49.8 79.2 Z"
+      fill="url(#leafFill)" stroke="#5d7755" stroke-width="0.6"
+    />
+    <!-- lower right -->
+    <path
+      d="M52.2 79.2 C59.8 76.8, 68.3 74.9, 77.8 73.4 C85.2 71.4, 91.6 67.8, 96.8 61.8 C89.9 62.2, 82.4 63.3, 74.2 65 C65.5 68.1, 58.2 72.3, 51.7 78.6 C51.5 79.2, 51.9 79.4, 52.2 79.2 Z"
+      fill="url(#leafFill)" stroke="#5d7755" stroke-width="0.6"
+    />
+    <!-- center vein -->
+    <path d="M50.9 76 C50.8 66, 50.7 55, 50.7 44 C50.7 31, 50.8 19, 51 9.5"
+      fill="none" stroke="#6b8a64" stroke-width="0.55" stroke-linecap="round" opacity="0.8"
+    />
+    <!-- upper inner veins -->
+    <path d="M50.8 75.8 C47.8 64, 42.1 41, 35 21.5"
+      fill="none" stroke="#6b8a64" stroke-width="0.5" stroke-linecap="round" opacity="0.72"
+    />
+    <path d="M51.2 75.8 C54.2 64, 59.9 41, 67 21.5"
+      fill="none" stroke="#6b8a64" stroke-width="0.5" stroke-linecap="round" opacity="0.72"
+    />
+    <!-- outer upper veins -->
+    <path d="M50.4 77.4 C42.6 63.8, 28.8 43.8, 16.6 29.6"
+      fill="none" stroke="#6b8a64" stroke-width="0.48" stroke-linecap="round" opacity="0.66"
+    />
+    <path d="M51.6 77.4 C59.4 63.8, 73.2 43.8, 85.4 29.6"
+      fill="none" stroke="#6b8a64" stroke-width="0.48" stroke-linecap="round" opacity="0.66"
+    />
+    <!-- lower veins -->
+    <path d="M50.2 78.8 C39.7 72.9, 23.7 67.8, 7.8 62.8"
+      fill="none" stroke="#6b8a64" stroke-width="0.45" stroke-linecap="round" opacity="0.62"
+    />
+    <path d="M51.8 78.8 C62.3 72.9, 78.3 67.8, 94.2 62.8"
+      fill="none" stroke="#6b8a64" stroke-width="0.45" stroke-linecap="round" opacity="0.62"
+    />
+  </g>
+</svg>
+      </div><!-- /.budz-ad-logo -->
+      <div class="budz-ad-body">
+        <div class="budz-ad-partner">🤝 Official Partner Deal</div>
+        <div class="budz-ad-title">Block Budz Specials</div>
+        <div class="budz-ad-deals">
+          <div class="budz-deal-chip" onclick="addItemByName('Joint')" style="cursor:pointer;">
+            <span class="budz-deal-icon">🌿</span>
+            <div class="budz-deal-info">
+              <div class="budz-deal-name">Joint</div>
+              <div class="budz-deal-price">$1,300 each · tap to add</div>
+            </div>
+          </div>
+          <div class="budz-deal-chip" onclick="addItemByName('Lighter')" style="cursor:pointer;">
+            <span class="budz-deal-icon">🔥</span>
+            <div class="budz-deal-info">
+              <div class="budz-deal-name">Lighter</div>
+              <div class="budz-deal-price">$300 each · tap to add</div>
+            </div>
+          </div>
+        </div>
+        <div class="budz-ad-cta">Block Budz partner discount available at checkout</div>
+      </div><!-- /.budz-ad-body -->
+      <div class="budz-smoke">💨</div>
+    </div><!-- /.budz-ad -->
+
+    <!-- 2-column layout -->
+    <div class="order-layout">
+      <!-- Menu -->
+      <div class="menu-col">
+        <div id="menu-root"></div>
+      </div>
+
+      <!-- Order panel -->
+      <div class="order-col collapsed" id="order-col">
+        <div class="mobile-handle" onclick="toggleOrderDrawer()">
+          <span>🛒 Current Order <span id="order-handle-count"></span></span>
+          <span style="font-size:18px;">⌃</span>
+        </div>
+        <div class="order-panel">
+          <div class="order-title">Current Order</div>
+          <div class="disc-banner" id="disc-banner-leo leo">🚔 LEO — 30% discount applied</div>
+          <div class="disc-banner" id="disc-banner-ems ems">🚑 EMS — 25% discount applied</div>
+          <div class="disc-banner" id="disc-banner-budz budz">🌿 Block Budz Partner — 20% discount applied</div>
+          <div id="order-lines"><div class="order-empty">No items yet — tap menu to add.</div></div>
+          <div class="totals" id="totals-block">
+            <div id="total-rows"></div>
+            <div class="total-final">
+              <span class="tf-label">Total Due</span>
+              <span class="tf-amount" id="tf-amount">$0</span>
+            </div>
+          </div>
+          <div class="order-actions" id="order-actions">
+            <button class="btn btn-magenta" onclick="sendToQueue()">Send to Queue</button>
+            <button class="btn btn-ghost" onclick="clearOrder()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /order tab -->
+
+  <!-- ══════════ QUEUE TAB ══════════ -->
+  <div class="tab-panel" id="tab-queue">
+    <div id="queue-list"></div>
+  </div>
+
+  <!-- ══════════ SHIFT TAB ══════════ -->
+  <div class="tab-panel" id="tab-shift">
+    <!-- Date navigator -->
+    <div class="date-nav">
+      <button class="date-nav-arrow" id="date-nav-prev" onclick="shiftNavPrev()">◀</button>
+      <div style="flex:1;text-align:center;">
+        <div class="date-nav-label" id="date-nav-label">No records yet</div>
+        <span class="date-nav-sub" id="date-nav-sub"></span>
+      </div>
+      <button class="date-nav-arrow" id="date-nav-next" onclick="shiftNavNext()">▶</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="shift-stats">
+      <div class="stat-card">
+        <div class="stat-label">Orders</div>
+        <div class="stat-value" id="stat-orders">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Revenue</div>
+        <div class="stat-value" id="stat-revenue">$0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Discounts</div>
+        <div class="stat-value green" id="stat-discounts">$0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Order</div>
+        <div class="stat-value" id="stat-avg">$0</div>
+      </div>
+    </div>
+
+    <!-- Commission breakdown -->
+    <div class="comm-grid">
+      <div class="comm-card">
+        <div class="comm-label">Company</div>
+        <div class="comm-value house-c" id="comm-house">$0</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-label">Employee</div>
+        <div class="comm-value emp-c" id="comm-emp">$0</div>
+      </div>
+    </div>
+
+    <div class="receipts-label">Completed Orders</div>
+    <div id="receipts-list"><div class="receipt-empty">No completed orders yet.</div></div>
+  </div>
+
+</div><!-- /pos-wrap -->
+
+<!-- ── Edit Modal ── -->
+<div class="modal-backdrop" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Edit Order</div>
+    <button class="modal-close" onclick="closeEditModal()">✕</button>
+    <div class="modal-section">Items in Order</div>
+    <div class="modal-order-lines" id="modal-order-lines"></div>
+    <div class="modal-totals" id="modal-totals"></div>
+    <div class="modal-section">Add Items</div>
+    <div class="modal-menu-grid" id="modal-menu-grid"></div>
+    <div class="modal-actions">
+      <button class="btn btn-magenta" onclick="saveEdit()">Save Changes</button>
+      <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Menu Data ──
+const MENU = [
+  { section: "Main Meals", items: [
+    { name: "Fish N Chips",       price: 160, desc: "Crispy battered fish with seasoned fries." },
+    { name: "Banger Mash",        price: 140, desc: "Juicy sausage over creamy mash with gravy." },
+    { name: "Patty Melt",         price: 150, desc: "Grilled beef, melted cheese, toasted bread." },
+    { name: "Mexican Taco",       price: 125, desc: "Seasoned meat with fresh, zesty toppings." },
+    { name: "Spicy Wings",        price: 155, desc: "Saucy wings with a bold, spicy kick." },
+  ]},
+  { section: "Desserts", items: [
+    { name: "New York Cheesecake",  price: 135, desc: "Smooth, rich cheesecake with buttery crust." },
+    { name: "Sticky Toffee Pudding",price: 130, desc: "Warm cake topped with sweet toffee sauce." },
+  ]},
+  { section: "Sides", items: [
+    { name: "Mozzarella Sticks",  price: 130, desc: "Crispy outside, gooey melted cheese inside." },
+    { name: "Fried Pickles",      price: 135, desc: "Tangy pickles fried to golden perfection." },
+    { name: "Onion Rings",        price: 125, desc: "Thick-cut onions, crispy and golden." },
+    { name: "Creamy Mac N Cheese",price: 130, desc: "Rich, cheesy macaroni comfort classic." },
+    { name: "Sausage Roll",       price: 130, desc: "Flaky pastry stuffed with savory sausage." },
+  ]},
+  { section: "Bottled Beer", items: [
+    { name: "Stella Artois",      price: 160, desc: "Crisp lager with a smooth finish." },
+    { name: "Miller Lite",        price: 140, desc: "Light beer, easy and refreshing." },
+    { name: "Coors Lite",         price: 130, desc: "Clean, cold lager with smooth taste." },
+    { name: "Heineken",           price: 165, desc: "Balanced lager with slight bitterness." },
+    { name: "Guinness",           price: 170, desc: "Dark stout with creamy, roasted flavor." },
+    { name: "Modelo Especial",    price: 155, desc: "Smooth lager with rich, full flavor." },
+  ]},
+  { section: "Cocktails", items: [
+    { name: "Long Island Iced Tea",price: 320, desc: "Strong mix of spirits with citrus." },
+    { name: "Shirley Temple",     price: 200, desc: "Sweet, fizzy drink with cherry flavor." },
+  ]},
+  { section: "Quick Hits", items: [
+    { name: "Jägerbomb",          price: 300, desc: "Energy drink mixed with herbal liqueur." },
+    { name: "Lemon Drop Shot",    price: 260, desc: "Sweet, tart citrus vodka shot." },
+    { name: "Fireball Shot",      price: 240, desc: "Cinnamon whiskey with a fiery kick." },
+    { name: "Jose Cuervo Shot",   price: 250, desc: "Classic smooth tequila shot." },
+    { name: "Tito's Vodka Shot",  price: 275, desc: "Clean, crisp vodka with smooth finish." },
+  ]},
+  { section: "Top Shelf", items: [
+    { name: "Whiskey",            price: 400, desc: "Premium pour, bold and smooth." },
+  ]},
+  { section: "Cannabis", items: [
+    { name: "Joint",              price: 1300, desc: "Premium joint — see staff for availability." },
+    { name: "Lighter",            price: 300,  desc: "Complimentary lighter to go with your purchase." },
+  ]},
+];
+
+// ── Discount types ──
+// 'none' | 'leo' | 'ems' | 'budz'
+let discType = 'none';
+const DISC_RATES = { none: 0, leo: 30, ems: 25, budz: 20 };
+
+// ── State ──
+let order = [];
+let manualDiscountPct = 0;
+let queue = [];
+let receipts = [];
+let shiftDateIdx = 0;
+let orderCounter = 0;
+let searchQuery = '';
+let editId = null;
+let editItems = [];
+const WARN_MINS = 10, LATE_MINS = 20;
+const STORAGE_KEY = 'bahama_mamas_v1';
+
+// ── Persistence ──
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ queue, receipts, orderCounter })); } catch(e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    queue = s.queue || [];
+    receipts = s.receipts || [];
+    orderCounter = s.orderCounter || 0;
+  } catch(e) {}
+}
+
+// ── Clock ──
+function tickClock() {
+  const now = new Date();
+  const te = document.getElementById('clock-time');
+  const de = document.getElementById('clock-date');
+  if (te) te.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  if (de) de.textContent = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// ── Tabs ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'queue') renderQueue();
+  if (name === 'shift') renderShift();
+}
+
+// ── Helpers ──
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+function nowStr() { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+function nowTs() { return Date.now(); }
+function padId(n) { return '#' + String(n).padStart(3, '0'); }
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function fmtDateKey(k) {
+  const [y,m,d] = k.split('-');
+  return new Date(y, m-1, d).toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+function elapsedLabel(ts) {
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if (mins < 1) return '< 1 min';
+  if (mins === 1) return '1 min';
+  return mins + ' mins';
+}
+function timerClass(ts) {
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if (mins >= LATE_MINS) return 'late';
+  if (mins >= WARN_MINS) return 'warn';
+  return '';
+}
+function discLabel(type) {
+  if (type === 'leo') return 'LEO';
+  if (type === 'ems') return 'EMS';
+  if (type === 'budz') return 'Block Budz';
+  return 'Regular';
+}
+
+// ── Search ──
+function toggleSearch() {
+  const btn = document.getElementById('search-toggle');
+  const exp = document.getElementById('search-expand');
+  const isOpen = exp.classList.contains('open');
+  if (isOpen) {
+    exp.classList.remove('open'); btn.classList.remove('active'); clearSearch();
+  } else {
+    exp.classList.add('open'); btn.classList.add('active');
+    document.getElementById('search-input').focus();
+  }
+}
+function onSearch(val) {
+  searchQuery = val.trim().toLowerCase();
+  document.getElementById('search-clear').style.display = searchQuery ? 'block' : 'none';
+  renderMenu();
+}
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  searchQuery = '';
+  document.getElementById('search-clear').style.display = 'none';
+  renderMenu();
+}
+
+// ── Discount type ──
+function setDiscType(type) {
+  discType = type;
+  ['none','leo','ems','budz'].forEach(t => {
+    document.getElementById('disc-' + t).classList.toggle('active', t === type);
+  });
+  renderOrder();
+}
+
+function updateDiscount(val) {
+  let p = parseInt(val, 10);
+  if (isNaN(p) || val === '') { manualDiscountPct = 0; renderOrder(); return; }
+  manualDiscountPct = Math.min(100, Math.max(0, p));
+  renderOrder();
+}
+
+// ── Compute totals ──
+function computeTotals(items, dType, extraPct) {
+  const subtotal = items.reduce((s, l) => s + l.qty * l.price, 0);
+  const typePct = DISC_RATES[dType] || 0;
+  const typeAmt = Math.round(subtotal * typePct / 100);
+  const afterType = subtotal - typeAmt;
+  const extraAmt = Math.round(afterType * (extraPct || 0) / 100);
+  const total = afterType - extraAmt;
+  return { subtotal, typePct, typeAmt, extraAmt, total };
+}
+
+// ── Order builder ──
+function addItemByName(name, targetOrder) {
+  const arr = targetOrder || order;
+  for (const s of MENU) {
+    const item = s.items.find(i => i.name === name);
+    if (item) {
+      const ex = arr.find(o => o.name === name);
+      if (ex) ex.qty++; else arr.push({ ...item, qty: 1 });
+      if (!targetOrder) { renderMenu(); renderOrder(); }
+      return;
+    }
+  }
+}
+function removeItem(name, targetOrder) {
+  const arr = targetOrder || order;
+  const idx = arr.findIndex(o => o.name === name);
+  if (idx === -1) return;
+  if (arr[idx].qty > 1) arr[idx].qty--; else arr.splice(idx, 1);
+  if (!targetOrder) { renderMenu(); renderOrder(); }
+}
+function setItemQty(name, val) {
+  const qty = parseInt(val, 10);
+  const idx = order.findIndex(o => o.name === name);
+  if (idx === -1) return;
+  if (isNaN(qty) || qty < 1) {
+    order.splice(idx, 1);
+  } else {
+    order[idx].qty = qty;
+  }
+  renderMenu();
+  renderOrder();
+}
+
+// ── Render: Menu ──
+function renderMenu() {
+  const root = document.getElementById('menu-root');
+  const inOrder = name => order.some(o => o.name === name);
+  const qty = name => { const l = order.find(o => o.name === name); return l ? l.qty : 0; };
+
+  let html = '';
+  for (const sec of MENU) {
+    const filtered = searchQuery
+      ? sec.items.filter(i => i.name.toLowerCase().includes(searchQuery) || i.desc.toLowerCase().includes(searchQuery))
+      : sec.items;
+    if (filtered.length === 0) continue;
+    html += `<div class="section-label">${sec.section}</div><div class="menu-list">`;
+    for (const item of filtered) {
+      const inO = inOrder(item.name);
+      const q = qty(item.name);
+      html += `<div class="menu-item${inO ? ' in-order' : ''}" onclick="addItemByName('${item.name.replace(/'/g, "\\'")}')">
+        <div class="mi-body">
+          <div class="mi-name">${item.name}</div>
+          <div class="mi-desc">${item.desc}</div>
+        </div>
+        <div class="mi-right">
+          <span class="mi-price">${fmt(item.price)}</span>
+          ${q > 0 ? `<span class="mi-qty-badge">${q}</span>` : ''}
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  if (!html) html = '<div class="no-results">No items match your search.</div>';
+  root.innerHTML = html;
+}
+
+// ── Render: Order ──
+function renderOrder() {
+  const linesEl = document.getElementById('order-lines');
+  const totalsEl = document.getElementById('totals-block');
+  const actionsEl = document.getElementById('order-actions');
+  const rowsEl = document.getElementById('total-rows');
+  const tfEl = document.getElementById('tf-amount');
+
+  // banners
+  ['leo','ems','budz'].forEach(t => {
+    const el = document.querySelector(`.disc-banner.${t}`);
+    if (el) el.style.display = (discType === t) ? 'block' : 'none';
+  });
+
+  if (order.length === 0) {
+    linesEl.innerHTML = '<div class="order-empty">No items yet — tap menu to add.</div>';
+    totalsEl.style.display = 'none';
+    actionsEl.style.display = 'none';
+    syncDrawer();
+    return;
+  }
+
+  const t = computeTotals(order, discType, manualDiscountPct);
+  linesEl.innerHTML = order.map(line => {
+    const safeName = line.name.replace(/'/g, "\\'");
+    return `<div class="order-line">
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="removeItem('${safeName}')">−</button>
+        <input class="qty-input" type="number" min="1" value="${line.qty}"
+          onchange="setItemQty('${safeName}', this.value)"
+          onfocus="this.select()"
+          onclick="event.stopPropagation()">
+        <button class="qty-btn" onclick="addItemByName('${safeName}')">+</button>
+      </div>
+      <div class="ol-name">${line.name}</div>
+      <div class="ol-price">${fmt(line.qty * line.price)}</div>
+    </div>`;
+  }).join('');
+
+  let rows = `<div class="total-row"><span>Subtotal</span><span>${fmt(t.subtotal)}</span></div>`;
+  if (t.typeAmt > 0) {
+    const cls = discType === 'leo' ? 'total-disc-green' : discType === 'ems' ? 'total-disc-blue' : 'total-disc-yellow';
+    rows += `<div class="total-row ${cls}"><span>${discLabel(discType)} ${t.typePct}% discount</span><span>−${fmt(t.typeAmt)}</span></div>`;
+  }
+  if (t.extraAmt > 0) rows += `<div class="total-row total-disc-red"><span>Extra ${manualDiscountPct}%</span><span>−${fmt(t.extraAmt)}</span></div>`;
+  rowsEl.innerHTML = rows;
+  tfEl.textContent = fmt(t.total);
+  totalsEl.style.display = 'block';
+  actionsEl.style.display = 'flex';
+  syncDrawer();
+}
+
+// ── Send to queue ──
+function sendToQueue() {
+  if (order.length === 0) return;
+  const custName = document.getElementById('cust-name').value.trim() || 'Guest';
+  orderCounter++;
+  const t = computeTotals(order, discType, manualDiscountPct);
+  queue.push({
+    id: orderCounter,
+    name: custName,
+    discType,
+    discPct: DISC_RATES[discType] || 0,
+    extraPct: manualDiscountPct,
+    items: order.map(l => ({ ...l })),
+    subtotal: t.subtotal, typeAmt: t.typeAmt, extraAmt: t.extraAmt, total: t.total,
+    time: nowStr(),
+    timestamp: nowTs(),
+  });
+  updateQueueBadge();
+  saveState();
+  clearOrder();
+}
+
+function clearOrder() {
+  order = [];
+  manualDiscountPct = 0;
+  discType = 'none';
+  document.getElementById('disc-input').value = '';
+  document.getElementById('cust-name').value = '';
+  setDiscType('none');
+  renderMenu();
+  renderOrder();
+}
+
+function updateQueueBadge() {
+  const badge = document.getElementById('queue-badge');
+  if (queue.length > 0) { badge.textContent = queue.length; badge.style.display = 'inline'; }
+  else badge.style.display = 'none';
+}
+
+// ── Mobile drawer ──
+function toggleOrderDrawer() {
+  if (window.innerWidth > 720) return;
+  const col = document.getElementById('order-col');
+  col.classList.toggle('collapsed');
+}
+function syncDrawer() {
+  const col = document.getElementById('order-col');
+  const count = order.reduce((s, l) => s + l.qty, 0);
+  const hc = document.getElementById('order-handle-count');
+  if (hc) hc.textContent = count > 0 ? `· ${count} item${count !== 1 ? 's' : ''}` : '';
+  if (window.innerWidth > 720) { col.classList.remove('collapsed'); return; }
+  if (count === 0) col.classList.add('collapsed');
+  else col.classList.remove('collapsed');
+  const panelH = col.offsetHeight;
+  const mc = document.querySelector('.menu-col');
+  if (mc) mc.style.paddingBottom = panelH + 'px';
+}
+window.addEventListener('resize', syncDrawer);
+
+// ── Queue ──
+function renderQueue() {
+  const el = document.getElementById('queue-list');
+  if (queue.length === 0) {
+    el.innerHTML = '<div class="queue-empty">No active orders — build an order and tap "Send to Queue".</div>';
+    return;
+  }
+  const sorted = [...queue].sort((a, b) => b.id - a.id);
+  el.innerHTML = '<div class="queue-grid">' + sorted.map(q => {
+    const itemSummary = q.items.map(l => `${l.qty}&times; ${l.name}`).join(' &middot; ');
+    const discParts = [];
+    if (q.typeAmt > 0) discParts.push(`${discLabel(q.discType)} &minus;${fmt(q.typeAmt)}`);
+    if (q.extraAmt > 0) discParts.push(`Extra &minus;${fmt(q.extraAmt)}`);
+    const tc = timerClass(q.timestamp);
+    const elapsed = elapsedLabel(q.timestamp);
+    const pillClass = q.discType === 'leo' ? 'leo' : q.discType === 'ems' ? 'ems' : q.discType === 'budz' ? 'budz' : '';
+    return `<div class="queue-card${tc ? ' ' + tc : ''}">
+      <div class="qc-header">
+        <span class="qc-num">${padId(q.id)}</span>
+        <span class="qc-name">${q.name}</span>
+        <span class="qc-pill${pillClass ? ' ' + pillClass : ''}">${q.discType === 'none' ? 'Regular' : discLabel(q.discType)}</span>
+      </div>
+      <div class="qc-items">${itemSummary}</div>
+      <div class="qc-total">${fmt(q.total)}${discParts.length ? `<small>${discParts.join(', ')}</small>` : ''}</div>
+      <div class="qc-actions">
+        <button class="btn-done" onclick="markDone(${q.id})">&#10003; Complete</button>
+        <button class="btn-edit" onclick="openEditModal(${q.id})">&#9998; Edit</button>
+        <button class="btn-del" onclick="deleteFromQueue(${q.id})">&#10005; Delete</button>
+      </div>
+      <div class="qc-footer">
+        <span class="qc-timer${tc ? ' ' + tc : ''}">&#128336; ${elapsed}</span>
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+setInterval(() => {
+  if (document.getElementById('tab-queue').classList.contains('active')) renderQueue();
+}, 10000);
+
+function markDone(id) {
+  const idx = queue.findIndex(q => q.id === id);
+  if (idx === -1) return;
+  const entry = { ...queue.splice(idx, 1)[0], completedAt: nowStr(), completedDate: todayKey() };
+  const today = todayKey();
+  let group = receipts.find(g => g.date === today);
+  if (!group) { group = { date: today, entries: [] }; receipts.unshift(group); }
+  else { receipts = receipts.filter(g => g.date !== today); receipts.unshift(group); }
+  group.entries.unshift(entry);
+  shiftDateIdx = 0;
+  updateQueueBadge();
+  saveState();
+  renderQueue();
+  renderShift();
+}
+
+function deleteFromQueue(id) {
+  queue = queue.filter(q => q.id !== id);
+  updateQueueBadge();
+  saveState();
+  renderQueue();
+}
+
+function deleteReceipt(dateKey, id) {
+  const group = receipts.find(g => g.date === dateKey);
+  if (group) {
+    group.entries = group.entries.filter(r => r.id !== id);
+    if (group.entries.length === 0) receipts = receipts.filter(g => g.date !== dateKey);
+  }
+  saveState();
+  renderShift();
+}
+
+// ── Edit modal ──
+function openEditModal(id) {
+  const entry = queue.find(q => q.id === id);
+  if (!entry) return;
+  editId = id;
+  editItems = entry.items.map(l => ({ ...l }));
+  document.getElementById('modal-title').textContent = `Edit Order — ${entry.name} ${padId(id)}`;
+  document.getElementById('edit-modal').classList.add('open');
+  renderEditModal(entry);
+}
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editId = null; editItems = [];
+}
+function editAddItem(name) {
+  const ex = editItems.find(i => i.name === name);
+  if (ex) { ex.qty++; }
+  else {
+    for (const s of MENU) {
+      const item = s.items.find(i => i.name === name);
+      if (item) { editItems.push({ ...item, qty: 1 }); break; }
+    }
+  }
+  renderEditModal(queue.find(q => q.id === editId));
+}
+function editRemoveItem(name) {
+  const idx = editItems.findIndex(i => i.name === name);
+  if (idx === -1) return;
+  if (editItems[idx].qty > 1) editItems[idx].qty--; else editItems.splice(idx, 1);
+  renderEditModal(queue.find(q => q.id === editId));
+}
+function renderEditModal(entry) {
+  const t = computeTotals(editItems, entry.discType, entry.extraPct);
+  const linesEl = document.getElementById('modal-order-lines');
+  if (editItems.length === 0) {
+    linesEl.innerHTML = '<div style="font-size:13px;color:var(--white-dim);font-style:italic;padding:6px 0;">No items — add from below.</div>';
+  } else {
+    linesEl.innerHTML = editItems.map(line => `<div class="modal-ol">
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="editRemoveItem('${line.name.replace(/'/g,"\\'")}')">−</button>
+        <span class="qty-num">${line.qty}</span>
+        <button class="qty-btn" onclick="editAddItem('${line.name.replace(/'/g,"\\'")}')">+</button>
+      </div>
+      <div class="modal-ol-name">${line.name}</div>
+      <span class="modal-ol-price">${fmt(line.qty * line.price)}</span>
+    </div>`).join('');
+  }
+  const totalsEl = document.getElementById('modal-totals');
+  let rows = `<div class="modal-total-row"><span>Subtotal</span><span>${fmt(t.subtotal)}</span></div>`;
+  if (t.typeAmt > 0) rows += `<div class="modal-total-row"><span>${discLabel(entry.discType)} ${t.typePct}%</span><span>−${fmt(t.typeAmt)}</span></div>`;
+  if (t.extraAmt > 0) rows += `<div class="modal-total-row"><span>Extra ${entry.extraPct}%</span><span>−${fmt(t.extraAmt)}</span></div>`;
+  rows += `<div class="modal-total-final"><span class="modal-tf-label">Total Due</span><span class="modal-tf-amount">${fmt(t.total)}</span></div>`;
+  totalsEl.innerHTML = rows;
+
+  // Menu grid
+  const gridEl = document.getElementById('modal-menu-grid');
+  gridEl.innerHTML = MENU.map(sec =>
+    sec.items.map(item => {
+      const inO = editItems.some(i => i.name === item.name);
+      return `<div class="modal-item${inO ? ' in-order' : ''}" onclick="editAddItem('${item.name.replace(/'/g,"\\'")}')">
+        <div class="modal-mi-name">${item.name}</div>
+        <div class="modal-mi-price">${fmt(item.price)}</div>
+      </div>`;
+    }).join('')
+  ).join('');
+}
+function saveEdit() {
+  const idx = queue.findIndex(q => q.id === editId);
+  if (idx === -1) { closeEditModal(); return; }
+  const entry = queue[idx];
+  const t = computeTotals(editItems, entry.discType, entry.extraPct);
+  queue[idx] = { ...entry, items: editItems.map(l => ({ ...l })), subtotal: t.subtotal, typeAmt: t.typeAmt, extraAmt: t.extraAmt, total: t.total };
+  saveState();
+  closeEditModal();
+  renderQueue();
+}
+
+// ── Shift ──
+function shiftNavPrev() { if (shiftDateIdx < receipts.length - 1) { shiftDateIdx++; renderShift(); } }
+function shiftNavNext() { if (shiftDateIdx > 0) { shiftDateIdx--; renderShift(); } }
+
+function renderShift() {
+  if (receipts.length === 0) shiftDateIdx = 0;
+  else shiftDateIdx = Math.max(0, Math.min(shiftDateIdx, receipts.length - 1));
+
+  const prevBtn = document.getElementById('date-nav-prev');
+  const nextBtn = document.getElementById('date-nav-next');
+  const navLabel = document.getElementById('date-nav-label');
+  const navSub = document.getElementById('date-nav-sub');
+
+  if (receipts.length === 0) {
+    navLabel.textContent = 'No records yet';
+    navSub.textContent = '';
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
+  } else {
+    const group = receipts[shiftDateIdx];
+    navLabel.textContent = fmtDateKey(group.date);
+    navSub.textContent = `${shiftDateIdx + 1} of ${receipts.length} day${receipts.length !== 1 ? 's' : ''}`;
+    if (prevBtn) prevBtn.disabled = shiftDateIdx >= receipts.length - 1;
+    if (nextBtn) nextBtn.disabled = shiftDateIdx <= 0;
+  }
+
+  const group = receipts.length > 0 ? receipts[shiftDateIdx] : null;
+  const entries = group ? group.entries : [];
+  const totalRevenue = entries.reduce((s, r) => s + r.total, 0);
+  const totalDiscounts = entries.reduce((s, r) => s + (r.typeAmt || 0) + (r.extraAmt || 0), 0);
+  const avg = entries.length > 0 ? Math.round(totalRevenue / entries.length) : 0;
+
+  document.getElementById('stat-orders').textContent = entries.length;
+  document.getElementById('stat-revenue').textContent = fmt(totalRevenue);
+  document.getElementById('stat-discounts').textContent = fmt(totalDiscounts);
+  document.getElementById('stat-avg').textContent = fmt(avg);
+
+  // Commission splits — 80% company, 20% employee
+  const empShare = Math.round(totalRevenue * 0.20);
+  const houseShare = totalRevenue - empShare;
+  document.getElementById('comm-house').textContent = fmt(houseShare);
+  document.getElementById('comm-emp').textContent = fmt(empShare);
+
+  const el = document.getElementById('receipts-list');
+  if (entries.length === 0) {
+    el.innerHTML = '<div class="receipt-empty">No completed orders for this date.</div>';
+    return;
+  }
+  const dateKey = group.date;
+  el.innerHTML = entries.map(r => {
+    const itemSummary = r.items.map(l => `${l.qty}&times; ${l.name}`).join(', ');
+    const discParts = [];
+    if (r.typeAmt > 0) discParts.push(`${discLabel(r.discType)} &minus;${fmt(r.typeAmt)}`);
+    if (r.extraAmt > 0) discParts.push(`Extra &minus;${fmt(r.extraAmt)}`);
+    return `<div class="receipt-card">
+      <div class="rc-num">${padId(r.id)}</div>
+      <div class="rc-body">
+        <div class="rc-name">${r.name}${r.discType && r.discType !== 'none' ? ` <span style="font-size:10px;color:var(--white-dim)">[${discLabel(r.discType)}]</span>` : ''}</div>
+        <div class="rc-meta">${r.time} &rarr; done ${r.completedAt}${discParts.length ? ' &middot; ' + discParts.join(', ') : ''}</div>
+        <div class="rc-items">${itemSummary}</div>
+      </div>
+      <div class="rc-right">
+        <div class="rc-total">${fmt(r.total)}</div>
+        <button class="btn-danger-sm" onclick="deleteReceipt('${dateKey}', ${r.id})">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Init ──
+loadState();
+renderMenu();
+renderOrder();
+renderQueue();
+renderShift();
+updateQueueBadge();
+syncDrawer();
+</script>
+</body>
+</html>
