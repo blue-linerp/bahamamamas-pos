@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Bahama Mamas POS</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal: #008080;
+      --teal-dark: #006666;
+      --teal-light: #e0f2f1;
+      --gold: #DAA520;
+      --gold-light: #fff8e1;
+      --white: #ffffff;
+      --offwhite: #f5f5f5;
+      --light-gray: #e0e0e0;
+      --mid-gray: #9e9e9e;
+      --dark: #1a1a1a;
+      --danger: #c0392b;
+      --danger-light: #fdecea;
+      --success: #27ae60;
+      --nav-h: 62px;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--offwhite);
+      color: var(--dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; min-height: 100vh; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ════════════════════════════
+       LOGIN SCREEN
+    ════════════════════════════ */
+    #loginScreen {
+      background: linear-gradient(160deg, var(--teal) 0%, var(--teal-dark) 100%);
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .login-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 28px 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .login-header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--teal);
+      letter-spacing: 1px;
+    }
+
+    .login-header p {
+      font-size: 12px;
+      color: var(--mid-gray);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .login-tabs {
+      display: flex;
+      background: var(--offwhite);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 20px;
+      border: 1px solid var(--light-gray);
+    }
+
+    .login-tab {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--mid-gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .login-tab.active {
+      background: var(--teal);
+      color: var(--white);
+    }
+
+    .name-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .name-btn {
+      padding: 13px 16px;
+      background: var(--offwhite);
+      border: 2px solid var(--light-gray);
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .name-btn:active { background: var(--teal); color: var(--white); border-color: var(--teal); }
+
+    .name-role-tag {
+      font-size: 11px;
+      background: var(--teal-light);
+      color: var(--teal);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    /* PIN Pad */
+    .pin-display {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .pin-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--teal);
+      background: transparent;
+      transition: background 0.15s;
+    }
+
+    .pin-dot.filled { background: var(--teal); }
+
+    .pin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .pin-key {
+      padding: 16px 10px;
+      background: var(--offwhite);
+      border: 2px solid var(--light-gray);
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .pin-key:active { background: var(--teal); color: var(--white); border-color: var(--teal); transform: scale(0.95); }
+    .pin-key.clr { color: var(--gold); }
+    .pin-key.del { color: var(--danger); }
+
+    .pin-error {
+      text-align: center;
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+
+    /* ════════════════════════════
+       APP SHELL
+    ════════════════════════════ */
+    #appScreen { background: var(--offwhite); }
+
+    .topbar {
+      background: var(--teal);
+      color: var(--white);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .topbar-title { font-size: 16px; font-weight: 800; letter-spacing: 0.5px; }
+    .topbar-sub { font-size: 10px; opacity: 0.75; margin-top: 1px; text-transform: uppercase; letter-spacing: 1px; }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #clockDisplay { font-size: 13px; font-weight: 600; opacity: 0.9; }
+
+    .user-chip {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: var(--white);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: var(--teal-dark);
+      display: flex;
+      z-index: 100;
+      border-top: 2px solid var(--gold);
+    }
+
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.55);
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 6px 2px;
+    }
+
+    .nav-btn .nav-icon { font-size: 20px; line-height: 1; }
+    .nav-btn.active { color: var(--gold); }
+    .nav-btn.active .nav-icon { transform: scale(1.1); }
+
+    /* Page Content */
+    .page-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      padding-bottom: calc(var(--nav-h) + 14px);
+    }
+
+    .tab-page { display: none; }
+    .tab-page.active { display: block; }
+
+    /* ════════════════════════════
+       SHARED COMPONENTS
+    ════════════════════════════ */
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--teal);
+      border-bottom: 2px solid var(--teal);
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--light-gray);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--teal-light);
+      padding-bottom: 6px;
+    }
+
+    .btn {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:active { transform: scale(0.97); opacity: 0.9; }
+    .btn-teal { background: var(--teal); color: var(--white); }
+    .btn-gold { background: var(--gold); color: var(--white); }
+    .btn-danger { background: var(--danger); color: var(--white); }
+    .btn-outline { background: var(--white); color: var(--teal); border: 2px solid var(--teal); }
+    .btn-full { width: 100%; }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: var(--white);
+      color: var(--dark);
+      -webkit-appearance: none;
+    }
+
+    .form-input:focus, .form-select:focus { border-color: var(--teal); }
+
+    .empty-state {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--mid-gray);
+    }
+
+    .empty-state .e-icon { font-size: 36px; margin-bottom: 8px; }
+    .empty-state p { font-size: 13px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--nav-h) + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--teal-dark);
+      color: var(--white);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      transition: all 0.25s;
+      z-index: 300;
+      white-space: nowrap;
+      border-left: 4px solid var(--gold);
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ════════════════════════════
+       ORDER TAB
+    ════════════════════════════ */
+    .discount-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .disc-btn {
+      padding: 10px 8px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      background: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--dark);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1.3;
+    }
+
+    .disc-btn.active {
+      border-color: var(--teal);
+      background: var(--teal-light);
+      color: var(--teal);
+    }
+
+    .extra-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .extra-row label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .extra-row input {
+      flex: 1;
+      padding: 9px 10px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .extra-row input:focus { border-color: var(--teal); }
+
+    /* Search */
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--white);
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      padding: 9px 12px;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .search-wrap:focus-within { border-color: var(--teal); }
+
+    .search-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      background: transparent;
+      color: var(--dark);
+    }
+
+    .search-wrap button {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--mid-gray);
+      padding: 0;
+    }
+
+    /* Category */
+    .cat-header {
+      background: var(--teal);
+      color: var(--white);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .partner-badge {
+      font-size: 10px;
+      background: var(--gold);
+      color: var(--white);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    .menu-item-row {
+      display: flex;
+      align-items: center;
+      background: var(--white);
+      border: 1px solid var(--light-gray);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.15s;
+    }
+
+    .menu-item-row:active { border-color: var(--teal); background: var(--teal-light); }
+
+    .item-emoji { font-size: 24px; margin-right: 10px; flex-shrink: 0; }
+    .item-info { flex: 1; }
+    .item-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+    .item-price { font-size: 12px; color: var(--teal); font-weight: 700; margin-top: 1px; }
+    .item-desc { font-size: 11px; color: var(--mid-gray); margin-top: 1px; }
+
+    .add-btn {
+      width: 34px;
+      height: 34px;
+      background: var(--teal);
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* Order Summary */
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .order-badge {
+      background: var(--teal);
+      color: var(--white);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .disc-tag {
+      display: inline-flex;
+      align-items: center;
+      background: var(--teal-light);
+      color: var(--teal);
+      border: 1px solid var(--teal);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      margin: 2px;
+    }
+
+    .order-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--light-gray);
+      gap: 6px;
+    }
+
+    .order-row:last-child { border-bottom: none; }
+
+    .order-item-name { flex: 1; font-size: 13px; font-weight: 600; }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--teal);
+      background: var(--white);
+      color: var(--teal);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .qty-btn:active { background: var(--teal); color: var(--white); }
+    .qty-num { font-size: 14px; font-weight: 800; min-width: 20px; text-align: center; }
+    .order-line-price { font-size: 13px; font-weight: 700; color: var(--teal); min-width: 58px; text-align: right; }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      margin-top: 4px;
+      border-top: 2px solid var(--teal);
+    }
+
+    .total-label { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .total-amount { font-size: 24px; font-weight: 800; color: var(--teal); }
+
+    .order-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* ════════════════════════════
+       QUEUE TAB
+    ════════════════════════════ */
+    .queue-nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .queue-nav-btn {
+      width: 42px;
+      height: 42px;
+      background: var(--teal);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .queue-counter { font-size: 13px; font-weight: 700; color: var(--mid-gray); }
+
+    /* ════════════════════════════
+       SHIFT TAB
+    ════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--light-gray);
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--mid-gray);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stat-value { font-size: 22px; font-weight: 800; color: var(--teal); margin-top: 4px; }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .split-card {
+      background: var(--white);
+      border: 1px solid var(--light-gray);
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .split-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--mid-gray); }
+    .split-company .split-value { font-size: 20px; font-weight: 800; color: var(--success); margin-top: 4px; }
+    .split-employee .split-value { font-size: 20px; font-weight: 800; color: var(--gold); margin-top: 4px; }
+
+    .log-row {
+      font-size: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--light-gray);
+      color: var(--mid-gray);
+    }
+
+    .log-row:last-child { border-bottom: none; }
+
+    /* ════════════════════════════
+       MENU MGMT TAB
+    ════════════════════════════ */
+    .menu-mgmt-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--light-gray);
+      gap: 8px;
+    }
+
+    .menu-mgmt-row:last-child { border-bottom: none; }
+    .menu-mgmt-name { flex: 1; font-size: 13px; font-weight: 600; }
+    .menu-mgmt-meta { font-size: 11px; color: var(--mid-gray); }
+
+    .del-btn {
+      width: 30px;
+      height: 30px;
+      background: var(--danger-light);
+      color: var(--danger);
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ════════════════════════════
+       ROLES TAB
+    ════════════════════════════ */
+    .member-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--light-gray);
+      gap: 10px;
+    }
+
+    .member-row:last-child { border-bottom: none; }
+
+    .member-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .member-name { font-size: 14px; font-weight: 700; }
+    .member-role-tag {
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--teal-light);
+      color: var(--teal);
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: 2px;
+      display: inline-block;
+    }
+
+    .perms-scroll { overflow-x: auto; }
+
+    .perms-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      min-width: 300px;
+    }
+
+    .perms-table th {
+      background: var(--teal);
+      color: var(--white);
+      padding: 8px 6px;
+      text-align: center;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .perms-table th:first-child { text-align: left; }
+
+    .perms-table td {
+      padding: 7px 6px;
+      border-bottom: 1px solid var(--light-gray);
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .perms-table td:first-child { text-align: left; font-weight: 600; }
+    .perms-table tr:nth-child(even) td { background: var(--offwhite); }
+
+    /* ════════════════════════════
+       MODAL (bottom sheet)
+    ════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: flex-end;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal-sheet {
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      padding: 20px 18px 28px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      animation: slideUp 0.28s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--light-gray);
+      border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════ -->
+<div id="loginScreen" class="screen active">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>🌴 BAHAMA MAMAS</h1>
+      <p>Bar & Club · Point of Sale</p>
+    </div>
+
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('name')">Name Login</button>
+      <button class="login-tab" onclick="switchLoginTab('pin')">PIN Login</button>
+    </div>
+
+    <div id="nameLoginPanel">
+      <div class="name-list" id="nameList"></div>
+    </div>
+
+    <div id="pinLoginPanel" style="display:none">
+      <p style="text-align:center;font-size:12px;color:var(--mid-gray);margin-bottom:14px;">Enter your 4-digit PIN</p>
+      <div class="pin-display">
+        <div class="pin-dot" id="ld0"></div>
+        <div class="pin-dot" id="ld1"></div>
+        <div class="pin-dot" id="ld2"></div>
+        <div class="pin-dot" id="ld3"></div>
+      </div>
+      <div class="pin-grid">
+        <button class="pin-key" onclick="lPinKey('1')">1</button>
+        <button class="pin-key" onclick="lPinKey('2')">2</button>
+        <button class="pin-key" onclick="lPinKey('3')">3</button>
+        <button class="pin-key" onclick="lPinKey('4')">4</button>
+        <button class="pin-key" onclick="lPinKey('5')">5</button>
+        <button class="pin-key" onclick="lPinKey('6')">6</button>
+        <button class="pin-key" onclick="lPinKey('7')">7</button>
+        <button class="pin-key" onclick="lPinKey('8')">8</button>
+        <button class="pin-key" onclick="lPinKey('9')">9</button>
+        <button class="pin-key clr" onclick="lPinClear()">CLR</button>
+        <button class="pin-key" onclick="lPinKey('0')">0</button>
+        <button class="pin-key del" onclick="lPinBack()">⌫</button>
+      </div>
+      <div class="pin-error" id="lPinErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     APP SCREEN
+══════════════════════════════════════ -->
+<div id="appScreen" class="screen">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">🌴 Bahama Mamas</div>
+      <div class="topbar-sub">Bar & Club · POS</div>
+    </div>
+    <div class="topbar-right">
+      <span id="clockDisplay">--:--</span>
+      <span class="user-chip" id="userChip">—</span>
+      <button class="logout-btn" onclick="logout()">Out</button>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+
+    <!-- ── ORDER TAB ── -->
+    <div class="tab-page active" id="tabOrder">
+      <div class="section-title">New Order</div>
+
+      <!-- Discount -->
+      <div class="card">
+        <div class="card-title">Customer Discount</div>
+        <div class="discount-grid">
+          <button class="disc-btn active" data-d="none" onclick="setDisc('none',0,this)">None</button>
+          <button class="disc-btn" data-d="leo" onclick="setDisc('leo',30,this)">🚔 LEO — 30%</button>
+          <button class="disc-btn" data-d="lafd" onclick="setDisc('lafd',25,this)">🚨 LAFD — 25%</button>
+          <button class="disc-btn" data-d="blockbudz" onclick="setDisc('blockbudz',20,this)">🌿 Block Budz — 20%</button>
+          <button class="disc-btn" data-d="sweetrequiem" onclick="setDisc('sweetrequiem',15,this)">🍦 Sweet Requiem — 15%</button>
+        </div>
+        <div class="extra-row">
+          <label>Extra %</label>
+          <input type="number" id="extraPct" placeholder="0" min="0" max="100" oninput="renderSummary()" />
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <span>🔍</span>
+        <input type="text" id="menuSearch" placeholder="Search menu items…" oninput="renderMenu()" />
+        <button onclick="document.getElementById('menuSearch').value='';renderMenu()">✕</button>
+      </div>
+
+      <!-- Menu -->
+      <div id="menuContainer"></div>
+
+      <!-- Order Summary -->
+      <div class="card">
+        <div class="order-header">
+          <div class="card-title" style="margin-bottom:0">Current Order</div>
+          <span class="order-badge" id="orderBadge">0 items</span>
+        </div>
+        <div id="discTags" style="margin:8px 0;"></div>
+        <div id="orderItems">
+          <div class="empty-state"><div class="e-icon">🛒</div><p>No items yet — tap menu to add.</p></div>
+        </div>
+        <div class="total-row">
+          <span class="total-label">Total Due</span>
+          <span class="total-amount" id="orderTotal">\$0</span>
+        </div>
+      </div>
+
+      <div class="order-actions">
+        <button class="btn btn-teal" onclick="sendToQueue()">Send to Queue</button>
+        <button class="btn btn-danger" onclick="clearOrder()">Clear Order</button>
+      </div>
+    </div>
+
+    <!-- ── QUEUE TAB ── -->
+    <div class="tab-page" id="tabQueue">
+      <div class="section-title">Order Queue</div>
+      <div class="queue-nav-row">
+        <button class="queue-nav-btn" onclick="queueNav(-1)">◀</button>
+        <span class="queue-counter" id="queueCounter">No orders</span>
+        <button class="queue-nav-btn" onclick="queueNav(1)">▶</button>
+      </div>
+      <div id="queueContent">
+        <div class="empty-state"><div class="e-icon">📋</div><p>No orders in queue yet.</p></div>
+      </div>
+    </div>
+
+    <!-- ── SHIFT TAB ── -->
+    <div class="tab-page" id="tabShift">
+      <div class="section-title">Shift Report</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Orders</div><div class="stat-value" id="sOrders">0</div></div>
+        <div class="stat-card"><div class="stat-label">Revenue</div><div class="stat-value" id="sRevenue">\$0</div></div>
+        <div class="stat-card"><div class="stat-label">Discounts</div><div class="stat-value" id="sDiscounts">\$0</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Order</div><div class="stat-value" id="sAvg">\$0</div></div>
+      </div>
+      <div class="split-grid">
+        <div class="split-card split-company">
+          <div class="split-label">🏢 Company (80%)</div>
+          <div class="split-value" id="sCompany">\$0</div>
+        </div>
+        <div class="split-card split-employee">
+          <div class="split-label">👤 Employee (20%)</div>
+          <div class="split-value" id="sEmployee">\$0</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Completed Orders</div>
+        <div id="completedOrders"><div class="empty-state"><div class="e-icon">📦</div><p>No completed orders yet.</p></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Activity Log</div>
+        <div id="activityLog"><div class="empty-state"><div class="e-icon">📝</div><p>No activity recorded yet.</p></div></div>
+      </div>
+    </div>
+
+    <!-- ── MENU MGMT TAB ── -->
+    <div class="tab-page" id="tabMenuMgmt">
+      <div class="section-title">Menu Management</div>
+      <div class="card">
+        <div class="card-title">Add Menu Item</div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="newItemCat"><option value="">Select category…</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Item Name</label>
+          <input class="form-input" id="newItemName" placeholder="e.g. Margarita" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input class="form-input" id="newItemDesc" placeholder="Optional description" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price ($)</label>
+          <input class="form-input" id="newItemPrice" type="number" placeholder="0" min="0" />
+        </div>
+        <button class="btn btn-teal btn-full" onclick="addMenuItem()">Add Item</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Categories</div>
+        <div class="form-group">
+          <input class="form-input" id="newCatName" placeholder="New category name…" />
+        </div>
+        <button class="btn btn-teal btn-full" onclick="addCategory()">Add Category</button>
+        <div id="categoryList" style="margin-top:12px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">All Menu Items</div>
+        <div id="menuItemsList"></div>
+      </div>
+    </div>
+
+    <!-- ── ROLES TAB ── -->
+    <div class="tab-page" id="tabRoles">
+      <div class="section-title">Team & Roles</div>
+      <div class="card">
+        <div class="card-title">Add Team Member</div>
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-input" id="newMemberName" placeholder="Full name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-select" id="newMemberRole">
+            <option value="Staff">Staff</option>
+            <option value="Manager">Manager</option>
+            <option value="Owner">Owner</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">PIN (4 digits)</label>
+          <input class="form-input" id="newMemberPin" type="password" maxlength="4" placeholder="••••" inputmode="numeric" />
+        </div>
+        <button class="btn btn-teal btn-full" onclick="addMember()">Add Member</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Team Members</div>
+        <div id="teamList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Role Permissions</div>
+        <div class="perms-scroll">
+          <table class="perms-table">
+            <thead>
+              <tr>
+                <th>Permission</th>
+                <th>Staff</th>
+                <th>Mgr</th>
+                <th>Owner</th>
+                <th>Admin</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Take Orders</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Manage Queue</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>View Shift Reports</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Edit Menu</td><td>🚫</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Add/Remove Items</td><td>🚫</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Manage Categories</td><td>🚫</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Manage Staff Roles</td><td>🚫</td><td>🚫</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Change Manager Roles</td><td>🚫</td><td>🚫</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Change Owner/Admin</td><td>🚫</td><td>🚫</td><td>🚫</td><td>✅</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end page-content -->
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('Order',this)">
+      <span class="nav-icon">🛒</span>Order
+    </button>
+    <button class="nav-btn" onclick="switchTab('Queue',this)">
+      <span class="nav-icon">📋</span>Queue
+    </button>
+    <button class="nav-btn" onclick="switchTab('Shift',this)">
+      <span class="nav-icon">📊</span>Shift
+    </button>
+    <button class="nav-btn" onclick="switchTab('MenuMgmt',this)">
+      <span class="nav-icon">🍽</span>Menu
+    </button>
+    <button class="nav-btn" onclick="switchTab('Roles',this)">
+      <span class="nav-icon">👤</span>Roles
+    </button>
+  </nav>
+</div>
+
+<!-- ══════════════════════════════════════
+     MANAGER PIN MODAL
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="mgrModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔐 Manager PIN Required</div>
+    <p style="font-size:12px;color:var(--mid-gray);margin-bottom:14px;">Enter your 4-digit PIN to continue.</p>
+    <div class="pin-display">
+      <div class="pin-dot" id="mpd0"></div>
+      <div class="pin-dot" id="mpd1"></div>
+      <div class="pin-dot" id="mpd2"></div>
+      <div class="pin-dot" id="mpd3"></div>
+    </div>
+    <div class="pin-grid">
+      <button class="pin-key" onclick="mPinKey('1')">1</button>
+      <button class="pin-key" onclick="mPinKey('2')">2</button>
+      <button class="pin-key" onclick="mPinKey('3')">3</button>
+      <button class="pin-key" onclick="mPinKey('4')">4</button>
+      <button class="pin-key" onclick="mPinKey('5')">5</button>
+      <button class="pin-key" onclick="mPinKey('6')">6</button>
+      <button class="pin-key" onclick="mPinKey('7')">7</button>
+      <button class="pin-key" onclick="mPinKey('8')">8</button>
+      <button class="pin-key" onclick="mPinKey('9')">9</button>
+      <button class="pin-key clr" onclick="mPinClear()">CLR</button>
+      <button class="pin-key" onclick="mPinKey('0')">0</button>
+      <button class="pin-key del" onclick="mPinBack()">⌫</button>
+    </div>
+    <div class="pin-error" id="mPinErr"></div>
+    <button class="btn btn-outline btn-full" style="margin-top:12px" onclick="closeMgrModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+const S = {
+  user: null,
+  order: [],
+  discount: { key: 'none', pct: 0 },
+  queue: [],
+  qIdx: 0,
+  completed: [],
+  log: [],
+  shift: { orders: 0, revenue: 0, discounts: 0 },
+  categories: ['Block Budz Specials', 'Sweet Requiem Specials'],
+  items: [
+    { id:1, cat:'Block Budz Specials',    name:'Joint',           emoji:'🌿', price:1300, desc:'Premium joint' },
+    { id:2, cat:'Block Budz Specials',    name:'Lighter',         emoji:'🔥', price:300,  desc:'Quality lighter' },
+    { id:3, cat:'Sweet Requiem Specials', name:'Cake Slice',      emoji:'🍰', price:450,  desc:'Sweet treat' },
+    { id:4, cat:'Sweet Requiem Specials', name:'Signature Drink', emoji:'🍷', price:300,  desc:'House special' },
+  ],
+  team: [{ name:'Admin', role:'Admin', pin:'0000' }],
+  nextId: 5,
+  lPin: '',
+  mPin: '',
+  mCb: null,
+};
+
+// ══════════════════════════════════
+// CLOCK
+// ══════════════════════════════════
+setInterval(() => {
+  document.getElementById('clockDisplay').textContent =
+    new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+}, 1000);
+
+// ══════════════════════════════════
+// TOAST
+// ══════════════════════════════════
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ══════════════════════════════════
+// LOGIN
+// ══════════════════════════════════
+function switchLoginTab(t) {
+  const tabs = document.querySelectorAll('.login-tab');
+  tabs[0].classList.toggle('active', t === 'name');
+  tabs[1].classList.toggle('active', t === 'pin');
+  document.getElementById('nameLoginPanel').style.display = t === 'name' ? 'block' : 'none';
+  document.getElementById('pinLoginPanel').style.display  = t === 'pin'  ? 'block' : 'none';
+  S.lPin = ''; updateLDots();
+  document.getElementById('lPinErr').textContent = '';
+}
+
+function renderNameList() {
+  const el = document.getElementById('nameList');
+  if (!S.team.length) { el.innerHTML = '<p style="color:var(--mid-gray);font-size:13px">No team members yet.</p>'; return; }
+  el.innerHTML = S.team.map(m =>
+    `<button class="name-btn" onclick="loginByName('${m.name}')">
+      <span>${m.name}</span>
+      <span class="name-role-tag">${m.role}</span>
+    </button>`
+  ).join('');
+}
+
+function loginByName(name) {
+  const m = S.team.find(x => x.name === name);
+  if (m) { S.user = m; enterApp(); }
+}
+
+function lPinKey(k) {
+  if (S.lPin.length >= 4) return;
+  S.lPin += k; updateLDots();
+  if (S.lPin.length === 4) {
+    const m = S.team.find(x => x.pin === S.lPin);
+    if (m) { S.user = m; enterApp(); }
+    else {
+      document.getElementById('lPinErr').textContent = 'Incorrect PIN — try again.';
+      setTimeout(() => { S.lPin = ''; updateLDots(); document.getElementById('lPinErr').textContent = ''; }, 1200);
+    }
+  }
+}
+
+function lPinBack()  { S.lPin = S.lPin.slice(0,-1); updateLDots(); }
+function lPinClear() { S.lPin = ''; updateLDots(); }
+
+function updateLDots() {
+  for (let i=0;i<4;i++) document.getElementById('ld'+i).classList.toggle('filled', i < S.lPin.length);
+}
+
+function enterApp() {
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('appScreen').classList.add('active');
+  document.getElementById('userChip').textContent = S.user.name;
+  renderNameList(); renderMenu(); renderTeamList(); renderCatSelects(); renderMenuItemsList(); renderCategoryList();
+  renderSummary(); updateShiftUI();
+}
+
+function logout() {
+  S.user = null; S.order = []; S.discount = { key:'none', pct:0 };
+  S.lPin = ''; updateLDots();
+  document.getElementById('lPinErr').textContent = '';
+  document.querySelectorAll('.disc-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.disc-btn[data-d="none"]').classList.add('active');
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+  switchLoginTab('name');
+}
+
+// ══════════════════════════════════
+// TAB NAV
+// ══════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════
+// DISCOUNT
+// ══════════════════════════════════
+function setDisc(key, pct, btn) {
+  document.querySelectorAll('.disc-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  S.discount = { key, pct };
+  renderSummary();
+}
+
+// ══════════════════════════════════
+// MENU RENDER
+// ══════════════════════════════════
+const partnerInfo = {
+  'Block Budz Specials':    { badge:'🤝 Partner Deal', note:'🌿 Block Budz partner discount available at checkout.' },
+  'Sweet Requiem Specials': { badge:'🍦 Partner Deal', note:'💛 Sweet Requiem partner discount available at checkout.' },
+};
+
+function renderMenu() {
+  const q = document.getElementById('menuSearch').value.toLowerCase();
+  const container = document.getElementById('menuContainer');
+  let html = '';
+
+  S.categories.forEach(cat => {
+    const filtered = S.items.filter(i => i.cat === cat && (!q || i.name.toLowerCase().includes(q)));
+    if (!filtered.length) return;
+    const p = partnerInfo[cat];
+    html += `<div style="margin-bottom:14px">
+      <div class="cat-header">
+        <span>${cat}</span>
+        ${p ? `<span class="partner-badge">${p.badge}</span>` : ''}
+      </div>`;
+    filtered.forEach(item => {
+      html += `<div class="menu-item-row" onclick="addToOrder(${item.id})">
+        <span class="item-emoji">${item.emoji||'🍽'}</span>
+        <div class="item-info">
+          <div class="item-name">${item.name}</div>
+          <div class="item-price">$${item.price.toLocaleString()}</div>
+          ${item.desc ? `<div class="item-desc">${item.desc}</div>` : ''}
+        </div>
+        <button class="add-btn" onclick="event.stopPropagation();addToOrder(${item.id})">+</button>
+      </div>`;
+    });
+    if (p) html += `<p style="font-size:11px;color:var(--mid-gray);margin:4px 0 0 4px">${p.note}</p>`;
+    html += `</div>`;
+  });
+
+  container.innerHTML = html || `<div class="empty-state"><div class="e-icon">🍽</div><p>No items found.</p></div>`;
+}
+
+// ══════════════════════════════════
+// ORDER
+// ══════════════════════════════════
+function addToOrder(id) {
+  const item = S.items.find(i => i.id === id);
+  if (!item) return;
+  const ex = S.order.find(o => o.id === id);
+  if (ex) ex.qty++; else S.order.push({ ...item, qty:1 });
+  renderSummary();
+  toast(`${item.emoji||'✅'} ${item.name} added`);
+}
+
+function changeQty(id, d) {
+  const idx = S.order.findIndex(o => o.id === id);
+  if (idx === -1) return;
+  S.order[idx].qty += d;
+  if (S.order[idx].qty <= 0) S.order.splice(idx, 1);
+  renderSummary();
+}
+
+function renderSummary() {
+  const badge   = document.getElementById('orderBadge');
+  const itemsEl = document.getElementById('orderItems');
+  const totalEl = document.getElementById('orderTotal');
+  const tagsEl  = document.getElementById('discTags');
+
+  const totalQty = S.order.reduce((s,o) => s+o.qty, 0);
+  badge.textContent = totalQty + ' item' + (totalQty !== 1 ? 's' : '');
+
+  // Tags
+  let tags = '';
+  const labels = { leo:'🚔 LEO — 30% off', lafd:'🚨 LAFD — 25% off', blockbudz:'🌿 Block Budz — 20% off', sweetrequiem:'🍦 Sweet Requiem — 15% off' };
+  if (S.discount.key !== 'none') tags += `<span class="disc-tag">${labels[S.discount.key]}</span>`;
+  const extra = parseFloat(document.getElementById('extraPct')?.value)||0;
+  if (extra > 0) tags += `<span class="disc-tag">Extra ${extra}% off</span>`;
+  tagsEl.innerHTML = tags;
+
+  if (!S.order.length) {
+    itemsEl.innerHTML = `<div class="empty-state"><div class="e-icon">🛒</div><p>No items yet — tap menu to add.</p></div>`;
+    totalEl.textContent = '\$0';
+    return;
+  }
+
+  let subtotal = 0;
+  let html = '';
+  S.order.forEach(o => {
+    const line = o.price * o.qty;
+    subtotal += line;
+    html += `<div class="order-row">
+      <span class="order-item-name">${o.emoji||''} ${o.name}</span>
+      <div class="qty-controls">
+        <button class="qty-btn" onclick="changeQty(${o.id},-1)">−</button>
+        <span class="qty-num">${o.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${o.id},1)">+</button>
+      </div>
+      <span class="order-line-price">$${line.toLocaleString()}</span>
+    </div>`;
+  });
+  itemsEl.innerHTML = html;
+
+  const discPct = S.discount.pct + extra;
+  const discAmt = Math.round(subtotal * discPct / 100);
+  totalEl.textContent = '$' + (subtotal - discAmt).toLocaleString();
+}
+
+function sendToQueue() {
+  if (!S.order.length) { toast('Add items first'); return; }
+  const extra    = parseFloat(document.getElementById('extraPct')?.value)||0;
+  const discPct  = S.discount.pct + extra;
+  const subtotal = S.order.reduce((s,o) => s + o.price*o.qty, 0);
+  const discAmt  = Math.round(subtotal * discPct / 100);
+  const total    = subtotal - discAmt;
+
+  const ord = {
+    id: Date.now(),
+    items: [...S.order],
+    discount: { ...S.discount, extra },
+    subtotal, discAmt, total,
+    time: new Date().toLocaleTimeString(),
+    staff: S.user?.name || 'Unknown',
+  };
+
+  S.queue.push(ord);
+  S.completed.push(ord);
+  S.shift.orders++;
+  S.shift.revenue   += total;
+  S.shift.discounts += discAmt;
+  S.log.unshift(`Order #${ord.id} — $${total.toLocaleString()} — ${ord.time}`);
+
+  clearOrder();
+  updateShiftUI();
+  renderCompletedOrders();
+  renderActivityLog();
+  renderQueueContent();
+  toast('✅ Order sent to queue!');
+}
+
+function clearOrder() {
+  S.order = [];
+  S.discount = { key:'none', pct:0 };
+  document.querySelectorAll('.disc-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.disc-btn[data-d="none"]').classList.add('active');
+  const ep = document.getElementById('extraPct');
+  if (ep) ep.value = '';
+  renderSummary();
+}
+
+// ══════════════════════════════════
+// QUEUE
+// ══════════════════════════════════
+function queueNav(d) {
+  S.qIdx = Math.max(0, Math.min(S.queue.length-1, S.qIdx+d));
+  renderQueueContent();
+}
+
+function renderQueueContent() {
+  const el = document.getElementById('queueContent');
+  const counter = document.getElementById('queueCounter');
+  if (!S.queue.length) {
+    counter.textContent = 'No orders';
+    el.innerHTML = `<div class="empty-state"><div class="e-icon">📋</div><p>No orders in queue yet.</p></div>`;
+    return;
+  }
+  const o = S.queue[S.qIdx];
+  counter.textContent = `Order ${S.qIdx+1} of ${S.queue.length}`;
+  el.innerHTML = `<div class="card">
+    <div class="card-title">Order ${S.qIdx+1}</div>
+    <p style="font-size:12px;color:var(--mid-gray);margin-bottom:10px">🕐 ${o.time} &nbsp;·&nbsp; 👤 ${o.staff}</p>
+    ${o.items.map(i => `<div class="order-row">
+      <span class="order-item-name">${i.emoji||''} ${i.name} ×${i.qty}</span>
+      <span class="order-line-price">$${(i.price*i.qty).toLocaleString()}</span>
+    </div>`).join('')}
+    <div class="total-row">
+      <span class="total-label">Total</span>
+      <span class="total-amount">$${o.total.toLocaleString()}</span>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════
+// SHIFT
+// ══════════════════════════════════
+function updateShiftUI() {
+  const s = S.shift;
+  document.getElementById('sOrders').textContent    = s.orders;
+  document.getElementById('sRevenue').textContent   = '$' + s.revenue.toLocaleString();
+  document.getElementById('sDiscounts').textContent = '$' + s.discounts.toLocaleString();
+  document.getElementById('sAvg').textContent       = s.orders ? '$' + Math.round(s.revenue/s.orders).toLocaleString() : '\$0';
+  document.getElementById('sCompany').textContent   = '$' + Math.round(s.revenue*0.8).toLocaleString();
+  document.getElementById('sEmployee').textContent  = '$' + Math.round(s.revenue*0.2).toLocaleString();
+}
+
+function renderCompletedOrders() {
+  const el = document.getElementById('completedOrders');
+  if (!S.completed.length) { el.innerHTML = `<div class="empty-state"><div class="e-icon">📦</div><p>No completed orders yet.</p></div>`; return; }
+  el.innerHTML = [...S.completed].reverse().map(o =>
+    `<div class="order-row">
+      <span class="order-item-name">${o.items.map(i=>i.name).join(', ')}</span>
+      <span class="order-line-price">$${o.total.toLocaleString()}</span>
+    </div>`
+  ).join('');
+}
+
+function renderActivityLog() {
+  const el = document.getElementById('activityLog');
+  if (!S.log.length) { el.innerHTML = `<div class="empty-state"><div class="e-icon">📝</div><p>No activity yet.</p></div>`; return; }
+  el.innerHTML = S.log.map(l => `<div class="log-row">${l}</div>`).join('');
+}
+
+// ══════════════════════════════════
+// MENU MANAGEMENT
+// ══════════════════════════════════
+function addCategory() {
+  const name = document.getElementById('newCatName').value.trim();
+  if (!name) { toast('Enter a category name'); return; }
+  if (S.categories.includes(name)) { toast('Already exists'); return; }
+  S.categories.push(name);
+  document.getElementById('newCatName').value = '';
+  renderCatSelects(); renderCategoryList(); renderMenu();
+  toast('Category added!');
+}
+
+function addMenuItem() {
+  const cat   = document.getElementById('newItemCat').value;
+  const name  = document.getElementById('newItemName').value.trim();
+  const desc  = document.getElementById('newItemDesc').value.trim();
+  const price = parseInt(document.getElementById('newItemPrice').value)||0;
+  if (!cat)  { toast('Select a category'); return; }
+  if (!name) { toast('Enter item name');   return; }
+  S.items.push({ id:S.nextId++, cat, name, emoji:'🍽', price, desc });
+  document.getElementById('newItemName').value  = '';
+  document.getElementById('newItemDesc').value  = '';
+  document.getElementById('newItemPrice').value = '';
+  renderMenu(); renderMenuItemsList();
+  toast('Item added!');
+}
+
+function renderCatSelects() {
+  const sel = document.getElementById('newItemCat');
+  sel.innerHTML = '<option value="">Select category…</option>' +
+    S.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function renderCategoryList() {
+  const el = document.getElementById('categoryList');
+  el.innerHTML = S.categories.map((c,i) =>
+    `<div class="menu-mgmt-row">
+      <span class="menu-mgmt-name">${c}</span>
+      <button class="del-btn" onclick="deleteCat(${i})">🗑</button>
+    </div>`
+  ).join('') || '<p style="color:var(--mid-gray);font-size:13px">No categories.</p>';
+}
+
+function deleteCat(i) {
+  S.categories.splice(i,1);
+  renderCategoryList(); renderCatSelects(); renderMenu();
+}
+
+function renderMenuItemsList() {
+  const el = document.getElementById('menuItemsList');
+  if (!S.items.length) { el.innerHTML = `<div class="empty-state"><div class="e-icon">🍽</div><p>No items yet.</p></div>`; return; }
+  el.innerHTML = S.items.map(item =>
+    `<div class="menu-mgmt-row">
+      <span style="font-size:20px;margin-right:8px">${item.emoji||'🍽'}</span>
+      <div style="flex:1">
+        <div class="menu-mgmt-name">${item.name}</div>
+        <div class="menu-mgmt-meta">$${item.price.toLocaleString()} · ${item.cat}</div>
+      </div>
+      <button class="del-btn" onclick="deleteItem(${item.id})">🗑</button>
+    </div>`
+  ).join('');
+}
+
+function deleteItem(id) {
+  S.items = S.items.filter(i => i.id !== id);
+  renderMenu(); renderMenuItemsList();
+  toast('Item removed');
+}
+
+// ══════════════════════════════════
+// TEAM & ROLES
+// ══════════════════════════════════
+function addMember() {
+  const name = document.getElementById('newMemberName').value.trim();
+  const role = document.getElementById('newMemberRole').value;
+  const pin  = document.getElementById('newMemberPin').value.trim();
+  if (!name)                          { toast('Enter a name');         return; }
+  if (!/^\d{4}$/.test(pin))           { toast('PIN must be 4 digits'); return; }
+  if (S.team.find(m => m.name.toLowerCase() === name.toLowerCase())) { toast('Name already exists'); return; }
+  S.team.push({ name, role, pin });
+  document.getElementById('newMemberName').value = '';
+  document.getElementById('newMemberPin').value  = '';
+  renderTeamList(); renderNameList();
+  toast('Member added!');
+}
+
+function renderTeamList() {
+  const el = document.getElementById('teamList');
+  if (!S.team.length) { el.innerHTML = '<p style="color:var(--mid-gray);font-size:13px">No team members yet.</p>'; return; }
+  el.innerHTML = S.team.map((m,i) =>
+    `<div class="member-row">
+      <div class="member-avatar">${m.name[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="member-name">${m.name}</div>
+        <span class="member-role-tag">${m.role}</span>
+      </div>
+      ${i>0 ? `<button class="del-btn" onclick="removeMember(${i})">🗑</button>` : ''}
+    </div>`
+  ).join('');
+}
+
+function removeMember(i) {
+  S.team.splice(i,1);
+  renderTeamList(); renderNameList();
+  toast('Member removed');
+}
+
+// ══════════════════════════════════
+// MANAGER PIN MODAL
+// ══════════════════════════════════
+function openMgrModal(cb) {
+  S.mPin = ''; S.mCb = cb;
+  updateMDots();
+  document.getElementById('mPinErr').textContent = '';
+  document.getElementById('mgrModal').classList.add('open');
+}
+
+function closeMgrModal() {
+  S.mPin = '';
+  document.getElementById('mgrModal').classList.remove('open');
+}
+
+function mPinKey(k) {
+  if (S.mPin.length >= 4) return;
+  S.mPin += k; updateMDots();
+  if (S.mPin.length === 4) {
+    const m = S.team.find(x => x.pin === S.mPin && ['Manager','Owner','Admin'].includes(x.role));
+    if (m) { closeMgrModal(); if (S.mCb) S.mCb(m); }
+    else {
+      document.getElementById('mPinErr').textContent = 'Incorrect PIN — try again.';
+      setTimeout(() => { S.mPin = ''; updateMDots(); document.getElementById('mPinErr').textContent = ''; }, 1200);
+    }
+  }
+}
+
+function mPinBack()  { S.mPin = S.mPin.slice(0,-1); updateMDots(); }
+function mPinClear() { S.mPin = ''; updateMDots(); }
+
+function updateMDots() {
+  for (let i=0;i<4;i++) document.getElementById('mpd'+i).classList.toggle('filled', i < S.mPin.length);
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+renderNameList();
+renderSummary();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+node_modules/
+
+# Local SQLite (recreated when you run npm start)
+data/*
+!data/.gitkeep
