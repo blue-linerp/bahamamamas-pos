@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
       ok: false,
       step: 'env',
       message:
-        'No Postgres URL found. In Vercel: Project → Settings → Environment Variables — add DATABASE_URL (or POSTGRES_URL) from your Vercel Postgres / Neon dashboard. Enable for Production and redeploy.',
+        'No Postgres URL in server env. Fix: Vercel → Project → Settings → Environment Variables → add DATABASE_URL (or SUPABASE_DATABASE_URL) with your Postgres URI → Production + Preview → Redeploy. Supabase: Dashboard → Project Settings → Database → copy URI (use Transaction pooler for serverless).',
     });
   }
 
