@@ -1177,6 +1177,14 @@
             <span class="add-item-label">Price ($)</span>
             <input class="mgmt-item-price-input" id="new-item-price" type="number" min="0" placeholder="0">
           </div>
+          <div class="add-item-field">
+            <span class="add-item-label">Tag</span>
+            <select class="add-item-select" id="new-item-tag" style="min-width:140px;">
+              <option value="">— None —</option>
+              <option value="budz">🟡 Block Budz</option>
+              <option value="requiem">🟠 Sweet Requiem</option>
+            </select>
+          </div>
           <button class="btn btn-magenta" onclick="addNewMenuItem()" style="white-space:nowrap;align-self:flex-end;">+ Add Item</button>
         </div>
       </div>
@@ -2387,17 +2395,24 @@ function renderMgmtItemsTable() {
   const wrap = document.getElementById('mgmt-items-table-wrap');
   const sections = menuCatFilter === -1 ? MENU : [MENU[menuCatFilter]];
   let html = `<table class="menu-mgmt-table">
-    <thead><tr><th>Name</th><th>Description</th><th>Price</th><th>Category</th><th>Actions</th></tr></thead><tbody>`;
+    <thead><tr><th>Name</th><th>Description</th><th>Price</th><th>Tag</th><th>Category</th><th>Actions</th></tr></thead><tbody>`;
 
   sections.forEach(sec => {
     sec.items.forEach((item, itemIdx) => {
       const secIdx = MENU.indexOf(sec);
       const safeN = (item.name || '').replace(/"/g,'&quot;');
       const safeD = (item.desc || '').replace(/"/g,'&quot;');
+      const tagVal = item.partner || '';
+      const tagOpts = [
+        `<option value=""${tagVal===''?' selected':''}>— None —</option>`,
+        `<option value="budz"${tagVal==='budz'?' selected':''}>🟡 Block Budz</option>`,
+        `<option value="requiem"${tagVal==='requiem'?' selected':''}>🟠 Sweet Requiem</option>`,
+      ].join('');
       html += `<tr>
         <td><input class="mgmt-item-name-input" value="${safeN}" id="iname-${secIdx}-${itemIdx}" style="min-width:130px;"></td>
         <td><input class="mgmt-item-desc-input" value="${safeD}" id="idesc-${secIdx}-${itemIdx}" style="min-width:180px;"></td>
         <td><input class="mgmt-item-price-input" type="number" value="${item.price}" id="iprice-${secIdx}-${itemIdx}" min="0"></td>
+        <td><select class="add-item-select" id="itag-${secIdx}-${itemIdx}" style="min-width:130px;">${tagOpts}</select></td>
         <td style="font-size:11px;color:var(--white-dim);">${sec.section}</td>
         <td style="display:flex;gap:6px;flex-wrap:wrap;">
           <button class="btn-save-item" onclick="saveMenuItemEdit(${secIdx},${itemIdx})">Save</button>
@@ -2415,17 +2430,21 @@ function saveMenuItemEdit(secIdx, itemIdx) {
   const nameEl = document.getElementById(`iname-${secIdx}-${itemIdx}`);
   const descEl = document.getElementById(`idesc-${secIdx}-${itemIdx}`);
   const priceEl = document.getElementById(`iprice-${secIdx}-${itemIdx}`);
+  const tagEl = document.getElementById(`itag-${secIdx}-${itemIdx}`);
   if (!nameEl) return;
   const oldName = MENU[secIdx].items[itemIdx].name;
   const oldPrice = MENU[secIdx].items[itemIdx].price;
   const newName = nameEl.value.trim();
   const newDesc = descEl ? descEl.value.trim() : '';
   const newPrice = parseInt(priceEl.value, 10);
+  const newTag = tagEl ? tagEl.value : '';
   if (!newName) { showToast('Name cannot be empty', 'error'); return; }
   if (isNaN(newPrice) || newPrice < 0) { showToast('Invalid price', 'error'); return; }
   MENU[secIdx].items[itemIdx].name = newName;
   MENU[secIdx].items[itemIdx].desc = newDesc;
   MENU[secIdx].items[itemIdx].price = newPrice;
+  if (newTag) { MENU[secIdx].items[itemIdx].partner = newTag; }
+  else { delete MENU[secIdx].items[itemIdx].partner; }
   saveMenuToStorage();
   renderMenu();
   // Log changes
@@ -2462,14 +2481,20 @@ function addNewMenuItem() {
   const price = parseInt(document.getElementById('new-item-price').value, 10);
   if (!name) { showToast('Enter a name', 'error'); return; }
   if (isNaN(price) || price < 0) { showToast('Enter a valid price', 'error'); return; }
-  MENU[catIdx].items.push({ name, desc, price });
-  logAction('Menu Item Added', `"${name}" added to ${MENU[catIdx].section} at ${fmt(price)}`);
+  const tagEl = document.getElementById('new-item-tag');
+  const partner = tagEl ? tagEl.value : '';
+  const newItem = { name, desc, price };
+  if (partner) newItem.partner = partner;
+  MENU[catIdx].items.push(newItem);
+  const tagLabel = partner === 'budz' ? ' [Block Budz]' : partner === 'requiem' ? ' [Sweet Requiem]' : '';
+  logAction('Menu Item Added', `"${name}" added to ${MENU[catIdx].section} at ${fmt(price)}${tagLabel}`);
   saveMenuToStorage();
   renderMenu();
   renderMgmtItemsTable();
   document.getElementById('new-item-name').value = '';
   document.getElementById('new-item-desc').value = '';
   document.getElementById('new-item-price').value = '';
+  if (tagEl) tagEl.value = '';
   showToast(`"${name}" added!`, 'success');
 }
 
