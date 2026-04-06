@@ -629,6 +629,217 @@
     .qc-actions, .btn-danger-sm, #tab-order, #tab-queue { display: none !important; }
     .receipt-card { break-inside: avoid; }
   }
+
+  /* ── Role Gate Banner ── */
+  .role-gate {
+    text-align: center; padding: 4rem 2rem;
+    background: var(--card); border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 14px; margin-top: 1rem;
+  }
+  .role-gate-icon { font-size: 48px; margin-bottom: 1rem; }
+  .role-gate-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.3em; color: var(--red); margin-bottom: 8px; }
+  .role-gate-msg { font-size: 13px; color: var(--white-dim); line-height: 1.6; }
+  .role-gate-role { color: var(--pink); font-weight: 600; }
+
+  /* ── Management page layout ── */
+  .mgmt-page { display: flex; flex-direction: column; gap: 1.5rem; }
+  .mgmt-section {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem;
+  }
+  .mgmt-section-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 0.3em;
+    color: var(--magenta-bright); margin-bottom: 1.25rem; text-transform: uppercase;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .mgmt-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Menu Management ── */
+  .menu-mgmt-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .cat-tab-btn {
+    font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.2em;
+    border-radius: 6px; padding: 6px 14px; cursor: pointer; border: 1px solid var(--border);
+    color: var(--white-dim); background: transparent; transition: all 0.15s;
+  }
+  .cat-tab-btn:hover { border-color: var(--magenta); color: var(--pink); }
+  .cat-tab-btn.active { border-color: var(--magenta-bright); color: var(--magenta-bright); background: rgba(255,0,255,0.1); }
+
+  .menu-mgmt-table { width: 100%; border-collapse: collapse; }
+  .menu-mgmt-table th {
+    font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.25em;
+    color: var(--white-dim); text-align: left; padding: 6px 10px 10px;
+    border-bottom: 1px solid var(--border); text-transform: uppercase;
+  }
+  .menu-mgmt-table td {
+    padding: 10px; border-bottom: 1px solid rgba(204,0,204,0.08);
+    font-size: 13px; vertical-align: middle;
+  }
+  .menu-mgmt-table tr:last-child td { border-bottom: none; }
+  .menu-mgmt-table tr:hover td { background: rgba(255,0,255,0.03); }
+
+  .mgmt-item-name-input, .mgmt-item-price-input, .mgmt-item-desc-input {
+    background: var(--deep); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 12px; padding: 6px 10px; outline: none; transition: border-color 0.15s;
+  }
+  .mgmt-item-name-input { width: 100%; min-width: 160px; }
+  .mgmt-item-desc-input { width: 100%; min-width: 200px; }
+  .mgmt-item-price-input { width: 90px; font-family: 'Bebas Neue', sans-serif; font-size: 15px; text-align: center; }
+  .mgmt-item-name-input:focus, .mgmt-item-price-input:focus, .mgmt-item-desc-input:focus { border-color: var(--magenta); }
+
+  .btn-save-item {
+    background: rgba(57,217,138,0.12); border: 1px solid rgba(57,217,138,0.4);
+    color: var(--leo-green); font-family: 'Bebas Neue', sans-serif; font-size: 11px;
+    letter-spacing: 0.15em; border-radius: 5px; padding: 5px 11px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-save-item:hover { background: rgba(57,217,138,0.22); }
+  .btn-remove-item {
+    background: var(--red-bg); border: 1px solid rgba(255,107,107,0.35);
+    color: var(--red); font-family: 'Bebas Neue', sans-serif; font-size: 11px;
+    letter-spacing: 0.15em; border-radius: 5px; padding: 5px 11px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-remove-item:hover { background: rgba(255,107,107,0.2); }
+
+  .add-item-row {
+    display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
+    background: rgba(255,0,255,0.04); border: 1px dashed rgba(255,0,255,0.2);
+    border-radius: 10px; padding: 14px; margin-top: 1rem;
+  }
+  .add-item-field { display: flex; flex-direction: column; gap: 4px; }
+  .add-item-label { font-size: 10px; letter-spacing: 0.2em; color: var(--white-dim); text-transform: uppercase; }
+  .add-item-select {
+    background: var(--deep); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 12px; padding: 7px 10px; outline: none;
+  }
+  .add-item-select:focus { border-color: var(--magenta); }
+
+  /* ── Category Management ── */
+  .cat-list { display: flex; flex-direction: column; gap: 8px; }
+  .cat-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .cat-row-name-input {
+    flex: 1; background: var(--deep); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 13px; padding: 6px 10px; outline: none;
+  }
+  .cat-row-name-input:focus { border-color: var(--magenta); }
+  .cat-item-count { font-size: 11px; color: var(--white-dim); white-space: nowrap; }
+
+  /* ── Role Management ── */
+  .roles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .role-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; position: relative;
+  }
+  .role-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .role-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.1em;
+    flex-shrink: 0; font-weight: 700;
+  }
+  .role-avatar.staff { background: rgba(160,144,184,0.15); border: 1px solid rgba(160,144,184,0.3); color: var(--white-dim); }
+  .role-avatar.manager { background: rgba(255,102,204,0.15); border: 1px solid rgba(255,102,204,0.4); color: var(--pink); }
+  .role-avatar.owner { background: rgba(255,170,68,0.15); border: 1px solid rgba(255,170,68,0.4); color: var(--warn); }
+  .role-avatar.admin { background: rgba(255,0,255,0.15); border: 1px solid rgba(255,0,255,0.4); color: var(--magenta-bright); }
+  .role-card-info { flex: 1; min-width: 0; }
+  .role-card-name { font-size: 14px; font-weight: 600; color: var(--white); }
+  .role-card-email { font-size: 11px; color: var(--white-dim); margin-top: 2px; }
+  .role-badge {
+    font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 0.2em;
+    padding: 3px 9px; border-radius: 4px; border: 1px solid;
+  }
+  .role-badge.staff { border-color: rgba(160,144,184,0.3); color: var(--white-dim); }
+  .role-badge.manager { border-color: rgba(255,102,204,0.4); color: var(--pink); background: rgba(255,102,204,0.1); }
+  .role-badge.owner { border-color: rgba(255,170,68,0.4); color: var(--warn); background: rgba(255,170,68,0.1); }
+  .role-badge.admin { border-color: rgba(255,0,255,0.4); color: var(--magenta-bright); background: rgba(255,0,255,0.1); }
+
+  .role-perms { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .perm-chip {
+    font-size: 10px; padding: 3px 8px; border-radius: 4px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    color: var(--white-dim); letter-spacing: 0.05em;
+  }
+  .perm-chip.has { background: rgba(57,217,138,0.1); border-color: rgba(57,217,138,0.3); color: var(--leo-green); }
+
+  .role-actions-row { display: flex; gap: 8px; align-items: center; }
+  .role-select {
+    flex: 1; background: var(--deep); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 12px; padding: 6px 8px; outline: none;
+  }
+  .role-select:focus { border-color: var(--magenta); }
+
+  .add-user-form {
+    display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
+    background: rgba(255,0,255,0.04); border: 1px dashed rgba(255,0,255,0.2);
+    border-radius: 10px; padding: 16px; margin-top: 1rem;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 4px; }
+  .form-label { font-size: 10px; letter-spacing: 0.2em; color: var(--white-dim); text-transform: uppercase; }
+  .form-input {
+    background: var(--deep); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 13px; padding: 7px 12px; outline: none;
+  }
+  .form-input:focus { border-color: var(--magenta); }
+  .form-select {
+    background: var(--deep); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 13px; padding: 7px 12px; outline: none;
+  }
+  .form-select:focus { border-color: var(--magenta); }
+
+  .role-current-you {
+    position: absolute; top: 10px; right: 12px;
+    font-size: 9px; letter-spacing: 0.18em; color: var(--magenta);
+    font-family: 'Bebas Neue', sans-serif; text-transform: uppercase;
+  }
+
+  .role-pin-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .role-pin-label { font-size: 10px; color: var(--white-dim); letter-spacing: 0.1em; }
+  .role-pin-display { font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: var(--pink); letter-spacing: 0.2em; }
+
+  /* ── PIN prompt overlay ── */
+  .pin-prompt-backdrop {
+    position: fixed; inset: 0; background: rgba(5,0,10,0.92);
+    display: none; align-items: center; justify-content: center;
+    z-index: 700; backdrop-filter: blur(4px);
+  }
+  .pin-prompt-backdrop.open { display: flex; }
+  .pin-prompt-box {
+    background: var(--card); border: 1px solid rgba(255,0,255,0.4);
+    border-radius: 16px; padding: 32px 36px; text-align: center;
+    box-shadow: 0 0 40px rgba(255,0,255,0.2); min-width: 300px;
+  }
+  .pin-prompt-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.3em; color: var(--pink); margin-bottom: 8px; }
+  .pin-prompt-sub { font-size: 12px; color: var(--white-dim); margin-bottom: 20px; }
+  .pin-dots { display: flex; justify-content: center; gap: 10px; margin-bottom: 18px; }
+  .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--magenta-dim); background: transparent; transition: all 0.2s; }
+  .pin-dot.filled { background: var(--magenta-bright); border-color: var(--magenta-bright); box-shadow: 0 0 8px rgba(255,0,255,0.5); }
+  .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 220px; margin: 0 auto 16px; }
+  .pin-key {
+    background: rgba(255,0,255,0.08); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--white); font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; padding: 14px 10px; cursor: pointer; transition: all 0.15s; text-align: center;
+  }
+  .pin-key:hover { background: rgba(255,0,255,0.2); border-color: var(--magenta); }
+  .pin-key:active { transform: scale(0.94); }
+  .pin-error { color: var(--red); font-size: 12px; margin-bottom: 10px; min-height: 18px; }
+
+  /* ── Login PIN mode ── */
+  .login-mode-row { display: flex; gap: 10px; margin-bottom: 16px; }
+  .login-mode-btn {
+    flex: 1; padding: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--white-dim); border-radius: 7px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.15em;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .login-mode-btn.active { border-color: var(--magenta-bright); color: var(--magenta-bright); background: rgba(255,0,255,0.1); }
 </style>
 </head>
 <body>
@@ -638,9 +849,48 @@
   <div class="login-box">
     <div class="login-logo">Bahama Mamas</div>
     <div class="login-title">Bar &amp; Club · Point of Sale</div>
-    <input id="login-name" placeholder="Enter your name" class="login-input" autocomplete="off"
-      onkeydown="if(event.key==='Enter')login()">
-    <button onclick="login()" class="login-btn">Start Shift</button>
+
+    <!-- Login mode toggle -->
+    <div class="login-mode-row">
+      <button class="login-mode-btn active" id="login-mode-name" onclick="setLoginMode('name')">Name Login</button>
+      <button class="login-mode-btn" id="login-mode-pin" onclick="setLoginMode('pin')">PIN Login</button>
+    </div>
+
+    <!-- Name mode -->
+    <div id="login-name-section">
+      <input id="login-name" placeholder="Enter your name" class="login-input" autocomplete="off"
+        onkeydown="if(event.key==='Enter')login()">
+      <div style="font-size:10px;color:var(--white-dim);opacity:0.6;margin-bottom:10px;letter-spacing:0.05em;">Name login grants Staff access. Use PIN login for elevated roles.</div>
+    </div>
+
+    <!-- PIN mode -->
+    <div id="login-pin-section" style="display:none;">
+      <div style="font-size:11px;color:var(--white-dim);margin-bottom:10px;letter-spacing:0.1em;">Enter your 4-digit PIN</div>
+      <div class="pin-dots" style="justify-content:center;margin-bottom:14px;">
+        <div class="pin-dot" id="lpd0"></div>
+        <div class="pin-dot" id="lpd1"></div>
+        <div class="pin-dot" id="lpd2"></div>
+        <div class="pin-dot" id="lpd3"></div>
+      </div>
+      <div class="pin-keypad" style="max-width:200px;margin:0 auto 12px;">
+        <button class="pin-key" onclick="loginPinPress('1')">1</button>
+        <button class="pin-key" onclick="loginPinPress('2')">2</button>
+        <button class="pin-key" onclick="loginPinPress('3')">3</button>
+        <button class="pin-key" onclick="loginPinPress('4')">4</button>
+        <button class="pin-key" onclick="loginPinPress('5')">5</button>
+        <button class="pin-key" onclick="loginPinPress('6')">6</button>
+        <button class="pin-key" onclick="loginPinPress('7')">7</button>
+        <button class="pin-key" onclick="loginPinPress('8')">8</button>
+        <button class="pin-key" onclick="loginPinPress('9')">9</button>
+        <button class="pin-key" onclick="loginPinClearAll()" style="font-size:12px;color:var(--white-dim)">CLR</button>
+        <button class="pin-key" onclick="loginPinPress('0')">0</button>
+        <button class="pin-key" onclick="loginPinBack()" style="font-size:15px;">⌫</button>
+      </div>
+      <div class="login-error" id="login-pin-error" style="display:none;margin-bottom:10px;">Incorrect PIN — try again.</div>
+      <div style="font-size:10px;color:var(--white-dim);opacity:0.6;margin-bottom:10px;">Default Admin PIN: 0000</div>
+    </div>
+
+    <button onclick="login()" class="login-btn" id="login-btn-main">Start Shift</button>
     <div class="login-error" id="login-error">Please enter your name to continue.</div>
   </div>
 </div>
@@ -660,6 +910,36 @@
   </div>
 </div>
 
+<!-- ── PIN Prompt ── -->
+<div class="pin-prompt-backdrop" id="pin-prompt-backdrop">
+  <div class="pin-prompt-box">
+    <div class="pin-prompt-title" id="pin-prompt-title">Manager PIN Required</div>
+    <div class="pin-prompt-sub" id="pin-prompt-sub">Enter your 4-digit PIN to continue</div>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key" onclick="pinClear()" style="font-size:13px;color:var(--white-dim)">CLR</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key" onclick="pinBackspace()" style="font-size:16px;">⌫</button>
+    </div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:4px;" onclick="closePinPrompt()">Cancel</button>
+  </div>
+</div>
+
 <!-- ── Main ── -->
 <div class="pos-wrap">
 
@@ -672,7 +952,7 @@
       <span class="clock-date" id="clock-date"></span>
     </div>
     <div class="header-actions">
-      <span class="user-badge">Signed in as <span class="user-name" id="user-display"></span></span>
+      <span class="user-badge">Signed in as <span class="user-name" id="user-display"></span> &middot; <span class="role-badge" id="user-role-display" style="font-size:10px;"></span></span>
       <button class="btn btn-ghost" style="padding:5px 14px;font-size:11px;" onclick="confirmLogout()">Logout</button>
     </div>
   </div>
@@ -682,6 +962,8 @@
     <button class="tab-btn active" onclick="switchTab('order', this)">Order</button>
     <button class="tab-btn" onclick="switchTab('queue', this)">Queue <span class="tab-badge" id="queue-badge" style="display:none"></span></button>
     <button class="tab-btn" onclick="switchTab('shift', this)">Shift</button>
+    <button class="tab-btn" id="tab-btn-menu-mgmt" onclick="switchTab('menu-mgmt', this)">Menu Mgmt</button>
+    <button class="tab-btn" id="tab-btn-role-mgmt" onclick="switchTab('role-mgmt', this)">Roles</button>
   </div>
 
   <!-- ══ ORDER TAB ══ -->
@@ -861,6 +1143,121 @@
 
     <div class="receipts-label">Completed Orders</div>
     <div id="receipts-list"><div class="receipt-empty">No completed orders yet.</div></div>
+
+    <div class="receipts-label" style="margin-top:1.5rem;" id="audit-log-label">Activity Log</div>
+    <div id="audit-log-list"><div class="receipt-empty">No activity recorded yet.</div></div>
+  </div>
+
+  <!-- ══ MENU MANAGEMENT TAB ══ -->
+  <div class="tab-panel" id="tab-menu-mgmt">
+    <div id="menu-mgmt-gate"></div>
+    <div class="mgmt-page" id="menu-mgmt-content" style="display:none;">
+
+      <!-- Category Tabs -->
+      <div class="mgmt-section">
+        <div class="mgmt-section-title">📋 Menu Items</div>
+        <div class="menu-mgmt-cats" id="mgmt-cat-tabs"></div>
+        <div id="mgmt-items-table-wrap"></div>
+
+        <!-- Add New Item -->
+        <div class="add-item-row" id="add-item-row">
+          <div class="add-item-field">
+            <span class="add-item-label">Category</span>
+            <select class="add-item-select" id="new-item-cat"></select>
+          </div>
+          <div class="add-item-field" style="flex:1;min-width:140px;">
+            <span class="add-item-label">Item Name</span>
+            <input class="mgmt-item-name-input" id="new-item-name" placeholder="New item name…">
+          </div>
+          <div class="add-item-field" style="min-width:180px;">
+            <span class="add-item-label">Description</span>
+            <input class="mgmt-item-desc-input" id="new-item-desc" placeholder="Short description…">
+          </div>
+          <div class="add-item-field">
+            <span class="add-item-label">Price ($)</span>
+            <input class="mgmt-item-price-input" id="new-item-price" type="number" min="0" placeholder="0">
+          </div>
+          <button class="btn btn-magenta" onclick="addNewMenuItem()" style="white-space:nowrap;align-self:flex-end;">+ Add Item</button>
+        </div>
+      </div>
+
+      <!-- Category Management -->
+      <div class="mgmt-section">
+        <div class="mgmt-section-title">🗂 Categories</div>
+        <div class="cat-list" id="mgmt-cat-list"></div>
+        <div class="add-item-row" style="margin-top:1rem;">
+          <div class="add-item-field" style="flex:1;">
+            <span class="add-item-label">New Category Name</span>
+            <input class="mgmt-item-name-input" id="new-cat-name" placeholder="e.g. Spirits, Wine, Mocktails…">
+          </div>
+          <button class="btn btn-magenta" onclick="addNewCategory()" style="align-self:flex-end;">+ Add Category</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ ROLE MANAGEMENT TAB ══ -->
+  <div class="tab-panel" id="tab-role-mgmt">
+    <div id="role-mgmt-gate"></div>
+    <div class="mgmt-page" id="role-mgmt-content" style="display:none;">
+
+      <!-- Current user role info -->
+      <div class="mgmt-section">
+        <div class="mgmt-section-title">👤 Team Members &amp; Roles</div>
+        <div class="roles-grid" id="roles-grid"></div>
+
+        <!-- Add user form -->
+        <div class="add-user-form" id="add-user-form">
+          <div class="form-field" style="flex:1;min-width:140px;">
+            <span class="form-label">Name</span>
+            <input class="form-input" id="new-user-name" placeholder="Staff member name…">
+          </div>
+          <div class="form-field">
+            <span class="form-label">Role</span>
+            <select class="form-select" id="new-user-role">
+              <option value="staff">Staff</option>
+              <option value="manager">Manager</option>
+              <option value="owner">Owner</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <span class="form-label">PIN (4 digits)</span>
+            <input class="form-input" id="new-user-pin" type="password" maxlength="4" placeholder="••••" style="width:100px;text-align:center;letter-spacing:0.3em;">
+          </div>
+          <button class="btn btn-magenta" onclick="addNewUser()" style="align-self:flex-end;">+ Add Member</button>
+        </div>
+      </div>
+
+      <!-- Role permission legend -->
+      <div class="mgmt-section">
+        <div class="mgmt-section-title">🔑 Role Permissions</div>
+        <table class="menu-mgmt-table">
+          <thead>
+            <tr>
+              <th>Permission</th>
+              <th>Staff</th>
+              <th>Manager</th>
+              <th>Owner</th>
+              <th>Admin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Take Orders</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>Manage Queue</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>View Shift Reports</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>Edit Menu Prices &amp; Names</td><td>🚫</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>Add / Remove Menu Items</td><td>🚫</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>Manage Categories</td><td>🚫</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            <tr><td>Manage Staff Roles</td><td>🚫</td><td>🚫</td><td>✅</td><td>✅</td></tr>
+            <tr><td>Change Manager Roles</td><td>🚫</td><td>🚫</td><td>✅</td><td>✅</td></tr>
+            <tr><td>Change Owner / Admin Roles</td><td>🚫</td><td>🚫</td><td>🚫</td><td>✅</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   </div>
 
 </div><!-- /pos-wrap -->
@@ -884,7 +1281,7 @@
 
 <script>
 // ── Menu Data ──
-const MENU = [
+const DEFAULT_MENU = [
   { section: "Main Meals", items: [
     { name: "Fish N Chips",        price: 160,  desc: "Crispy battered fish with seasoned fries." },
     { name: "Banger Mash",         price: 140,  desc: "Juicy sausage over creamy mash with gravy." },
@@ -936,6 +1333,48 @@ const MENU = [
   ]},
 ];
 
+// ── Role System ──
+const ROLE_LEVELS = { staff: 1, manager: 2, owner: 3, admin: 4 };
+const ROLE_LABELS = { staff: 'Staff', manager: 'Manager', owner: 'Owner', admin: 'Admin' };
+const DEFAULT_USERS = [
+  { name: 'Admin', role: 'admin', pin: '0000' },
+];
+
+// ── Menu (mutable) ──
+let MENU = JSON.parse(JSON.stringify(DEFAULT_MENU));
+let menuCatFilter = 0; // index of category shown in mgmt
+
+function loadMenuFromStorage() {
+  try {
+    const raw = localStorage.getItem('bahama_menu_v2');
+    if (raw) MENU = JSON.parse(raw);
+  } catch(e) { MENU = JSON.parse(JSON.stringify(DEFAULT_MENU)); }
+}
+function saveMenuToStorage() {
+  try { localStorage.setItem('bahama_menu_v2', JSON.stringify(MENU)); } catch(e) {}
+}
+
+// ── Users storage ──
+function loadUsers() {
+  try {
+    const raw = localStorage.getItem('bahama_users_v2');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  const d = JSON.parse(JSON.stringify(DEFAULT_USERS));
+  saveUsers(d);
+  return d;
+}
+function saveUsers(users) {
+  try { localStorage.setItem('bahama_users_v2', JSON.stringify(users)); } catch(e) {}
+}
+
+// ── Current session role ──
+let currentUserRole = 'staff'; // resolved after PIN login
+let currentUserPin = '';
+
+function getRoleLevel(role) { return ROLE_LEVELS[role] || 1; }
+function canAccess(minRole) { return getRoleLevel(currentUserRole) >= getRoleLevel(minRole); }
+
 // ── Constants ──
 const DISC_RATES = { none: 0, leo: 30, lafd: 25, budz: 20, requiem: 15 };
 const WARN_MINS = 10, LATE_MINS = 20;
@@ -982,22 +1421,91 @@ function showToast(msg, type = '') {
 }
 
 // ── Login ──
+let loginMode = 'name'; // 'name' or 'pin'
+function setLoginMode(mode) {
+  loginMode = mode;
+  document.getElementById('login-mode-name').classList.toggle('active', mode === 'name');
+  document.getElementById('login-mode-pin').classList.toggle('active', mode === 'pin');
+  document.getElementById('login-name-section').style.display = mode === 'name' ? 'block' : 'none';
+  document.getElementById('login-pin-section').style.display = mode === 'pin' ? 'block' : 'none';
+  document.getElementById('login-btn-main').style.display = mode === 'name' ? 'block' : 'none';
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-pin-error').style.display = 'none';
+  loginPinVal = ''; updateLoginPinDots();
+}
+
 function login() {
+  if (loginMode === 'pin') { loginWithPin(); return; }
   const name = document.getElementById('login-name').value.trim();
   const errEl = document.getElementById('login-error');
   if (!name) { errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
+  // Name login always grants Staff access — use PIN login for elevated roles
   currentUser = name;
-  localStorage.setItem('posUser', name);
-  document.getElementById('user-display').textContent = name;
+  currentUserRole = 'staff';
+  finishLogin();
+}
+
+let loginPinVal = '';
+function loginPinPress(d) {
+  if (loginPinVal.length >= 4) return;
+  loginPinVal += d;
+  updateLoginPinDots();
+  if (loginPinVal.length === 4) setTimeout(loginWithPin, 120);
+}
+function loginPinBack() {
+  loginPinVal = loginPinVal.slice(0,-1);
+  updateLoginPinDots();
+  document.getElementById('login-pin-error').style.display = 'none';
+}
+function loginPinClearAll() { loginPinVal = ''; updateLoginPinDots(); }
+function updateLoginPinDots() {
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById('lpd' + i);
+    if (el) el.classList.toggle('filled', i < loginPinVal.length);
+  }
+}
+function loginWithPin() {
+  const users = loadUsers();
+  const match = users.find(u => u.pin === loginPinVal);
+  if (!match) {
+    document.getElementById('login-pin-error').style.display = 'block';
+    loginPinVal = ''; updateLoginPinDots(); return;
+  }
+  document.getElementById('login-pin-error').style.display = 'none';
+  currentUser = match.name;
+  currentUserRole = match.role;
+  finishLogin();
+}
+
+function applyRoleBadge(role) {
+  const el = document.getElementById('user-role-display');
+  if (!el) return;
+  el.textContent = ROLE_LABELS[role] || 'Staff';
+  el.className = 'role-badge ' + (role || 'staff');
+}
+
+function finishLogin() {
+  localStorage.setItem('posUser', currentUser);
+  localStorage.setItem('posUserRole', currentUserRole);
+  document.getElementById('user-display').textContent = currentUser;
+  applyRoleBadge(currentUserRole);
   document.getElementById('login-screen').style.display = 'none';
+  // Reset login form state
+  loginPinVal = ''; updateLoginPinDots();
+  const nameInp = document.getElementById('login-name');
+  if (nameInp) nameInp.value = '';
   loadState();
+  loadAuditLog();
+  loadMenuFromStorage();
   renderMenu();
   renderOrder();
   renderQueue();
   renderShift();
   updateQueueBadge();
   syncDrawer();
+  updateMgmtTabVisibility();
+  showToast(`Welcome, ${currentUser}! (${ROLE_LABELS[currentUserRole]})`, 'success');
 }
 
 function confirmLogout() {
@@ -1007,7 +1515,16 @@ function confirmLogout() {
 }
 function logout() {
   localStorage.removeItem('posUser');
+  localStorage.removeItem('posUserRole');
   location.reload();
+}
+
+function updateMgmtTabVisibility() {
+  // Menu Mgmt: manager+
+  // Role Mgmt: owner+
+  const menuBtn = document.getElementById('tab-btn-menu-mgmt');
+  const roleBtn = document.getElementById('tab-btn-role-mgmt');
+  // Always show tabs but gate content inside
 }
 
 // ── Persistence ──
@@ -1046,6 +1563,8 @@ function switchTab(name, btn) {
   btn.classList.add('active');
   if (name === 'queue') renderQueue();
   if (name === 'shift') renderShift();
+  if (name === 'menu-mgmt') renderMenuMgmt();
+  if (name === 'role-mgmt') renderRoleMgmt();
 }
 
 // ── Helpers ──
@@ -1548,27 +2067,455 @@ function renderShift() {
   const el = document.getElementById('receipts-list');
   if (entries.length === 0) {
     el.innerHTML = '<div class="receipt-empty">No completed orders for this date.</div>';
+  } else {
+    const dateKey = group.date;
+    el.innerHTML = entries.map(r => {
+      const itemSummary = r.items.map(l => `${l.qty}&times; ${l.name}`).join(', ');
+      const discParts = [];
+      if (r.typeAmt > 0) discParts.push(`${discLabel(r.discType)} &minus;${fmt(r.typeAmt)}`);
+      if (r.extraAmt > 0) discParts.push(`Extra &minus;${fmt(r.extraAmt)}`);
+      return `<div class="receipt-card">
+        <div class="rc-num">${padId(r.id)}</div>
+        <div class="rc-body">
+          <div class="rc-name">${r.name}${r.discType && r.discType !== 'none' ? ` <span style="font-size:10px;color:var(--white-dim)">[${discLabel(r.discType)}]</span>` : ''}</div>
+          <div class="rc-meta">${r.time} &rarr; done ${r.completedAt}${discParts.length ? ' &middot; ' + discParts.join(', ') : ''}</div>
+          <div class="rc-items">${itemSummary}</div>
+        </div>
+        <div class="rc-right">
+          <div class="rc-total">${fmt(r.total)}</div>
+          <button class="btn-danger-sm" onclick="confirmDeleteReceipt('${dateKey}', ${r.id})">Remove</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Always render audit log at end
+  renderAuditLog();
+}
+
+// ── PIN Prompt System ──
+let pinBuffer = '';
+let pinResolve = null;
+let pinMinRole = 'manager';
+
+function requirePinForRole(minRole, title, sub) {
+  return new Promise(resolve => {
+    if (canAccess(minRole)) { resolve(true); return; }
+    pinMinRole = minRole;
+    pinResolve = resolve;
+    pinBuffer = '';
+    updatePinDots();
+    document.getElementById('pin-prompt-title').textContent = title || 'Access Restricted';
+    document.getElementById('pin-prompt-sub').textContent = sub || `Requires ${ROLE_LABELS[minRole]} PIN`;
+    document.getElementById('pin-error').textContent = '';
+    document.getElementById('pin-prompt-backdrop').classList.add('open');
+  });
+}
+function closePinPrompt() {
+  document.getElementById('pin-prompt-backdrop').classList.remove('open');
+  if (pinResolve) { pinResolve(false); pinResolve = null; }
+}
+function pinPress(d) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updatePinDots();
+  if (pinBuffer.length === 4) setTimeout(checkPin, 120);
+}
+function pinBackspace() { pinBuffer = pinBuffer.slice(0,-1); updatePinDots(); }
+function pinClear() { pinBuffer = ''; updatePinDots(); document.getElementById('pin-error').textContent = ''; }
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd' + i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+function checkPin() {
+  const users = loadUsers();
+  const match = users.find(u => u.pin === pinBuffer && getRoleLevel(u.role) >= getRoleLevel(pinMinRole));
+  if (match) {
+    document.getElementById('pin-prompt-backdrop').classList.remove('open');
+    document.getElementById('pin-error').textContent = '';
+    if (pinResolve) { pinResolve(true); pinResolve = null; }
+  } else {
+    document.getElementById('pin-error').textContent = 'Incorrect PIN — try again.';
+    pinBuffer = ''; updatePinDots();
+  }
+}
+
+// ── Role Gate HTML ──
+function roleGateHTML(role) {
+  return `<div class="role-gate">
+    <div class="role-gate-icon">🔒</div>
+    <div class="role-gate-title">Access Restricted</div>
+    <div class="role-gate-msg">This section requires <span class="role-gate-role">${ROLE_LABELS[role]} or above</span>.<br>
+    Your current role is <span class="role-gate-role">${ROLE_LABELS[currentUserRole] || 'Staff'}</span>.<br><br>
+    Contact a ${ROLE_LABELS[role]} to gain access.</div>
+  </div>`;
+}
+
+// ── Menu Management ──
+function renderMenuMgmt() {
+  const gate = document.getElementById('menu-mgmt-gate');
+  const content = document.getElementById('menu-mgmt-content');
+  if (!canAccess('manager')) {
+    gate.innerHTML = roleGateHTML('manager');
+    content.style.display = 'none';
     return;
   }
-  const dateKey = group.date;
-  el.innerHTML = entries.map(r => {
-    const itemSummary = r.items.map(l => `${l.qty}&times; ${l.name}`).join(', ');
-    const discParts = [];
-    if (r.typeAmt > 0) discParts.push(`${discLabel(r.discType)} &minus;${fmt(r.typeAmt)}`);
-    if (r.extraAmt > 0) discParts.push(`Extra &minus;${fmt(r.extraAmt)}`);
-    return `<div class="receipt-card">
-      <div class="rc-num">${padId(r.id)}</div>
-      <div class="rc-body">
-        <div class="rc-name">${r.name}${r.discType && r.discType !== 'none' ? ` <span style="font-size:10px;color:var(--white-dim)">[${discLabel(r.discType)}]</span>` : ''}</div>
-        <div class="rc-meta">${r.time} &rarr; done ${r.completedAt}${discParts.length ? ' &middot; ' + discParts.join(', ') : ''}</div>
-        <div class="rc-items">${itemSummary}</div>
+  gate.innerHTML = '';
+  content.style.display = 'flex';
+  renderMgmtCatTabs();
+  renderMgmtItemsTable();
+  renderMgmtCatList();
+  populateNewItemCatSelect();
+}
+
+function renderMgmtCatTabs() {
+  const wrap = document.getElementById('mgmt-cat-tabs');
+  wrap.innerHTML = MENU.map((sec, i) =>
+    `<button class="cat-tab-btn${i === menuCatFilter ? ' active' : ''}" onclick="setMgmtCat(${i})">${sec.section}</button>`
+  ).join('') + `<button class="cat-tab-btn${menuCatFilter === -1 ? ' active' : ''}" onclick="setMgmtCat(-1)">All</button>`;
+}
+
+function setMgmtCat(idx) {
+  menuCatFilter = idx;
+  renderMgmtCatTabs();
+  renderMgmtItemsTable();
+}
+
+function renderMgmtItemsTable() {
+  const wrap = document.getElementById('mgmt-items-table-wrap');
+  const sections = menuCatFilter === -1 ? MENU : [MENU[menuCatFilter]];
+  let html = `<table class="menu-mgmt-table">
+    <thead><tr><th>Name</th><th>Description</th><th>Price</th><th>Category</th><th>Actions</th></tr></thead><tbody>`;
+
+  sections.forEach(sec => {
+    sec.items.forEach((item, itemIdx) => {
+      const secIdx = MENU.indexOf(sec);
+      const safeN = (item.name || '').replace(/"/g,'&quot;');
+      const safeD = (item.desc || '').replace(/"/g,'&quot;');
+      html += `<tr>
+        <td><input class="mgmt-item-name-input" value="${safeN}" id="iname-${secIdx}-${itemIdx}" style="min-width:130px;"></td>
+        <td><input class="mgmt-item-desc-input" value="${safeD}" id="idesc-${secIdx}-${itemIdx}" style="min-width:180px;"></td>
+        <td><input class="mgmt-item-price-input" type="number" value="${item.price}" id="iprice-${secIdx}-${itemIdx}" min="0"></td>
+        <td style="font-size:11px;color:var(--white-dim);">${sec.section}</td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn-save-item" onclick="saveMenuItemEdit(${secIdx},${itemIdx})">Save</button>
+          <button class="btn-remove-item" onclick="removeMenuItem(${secIdx},${itemIdx})">Remove</button>
+        </td>
+      </tr>`;
+    });
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function saveMenuItemEdit(secIdx, itemIdx) {
+  const nameEl = document.getElementById(`iname-${secIdx}-${itemIdx}`);
+  const descEl = document.getElementById(`idesc-${secIdx}-${itemIdx}`);
+  const priceEl = document.getElementById(`iprice-${secIdx}-${itemIdx}`);
+  if (!nameEl) return;
+  const oldName = MENU[secIdx].items[itemIdx].name;
+  const oldPrice = MENU[secIdx].items[itemIdx].price;
+  const newName = nameEl.value.trim();
+  const newDesc = descEl ? descEl.value.trim() : '';
+  const newPrice = parseInt(priceEl.value, 10);
+  if (!newName) { showToast('Name cannot be empty', 'error'); return; }
+  if (isNaN(newPrice) || newPrice < 0) { showToast('Invalid price', 'error'); return; }
+  MENU[secIdx].items[itemIdx].name = newName;
+  MENU[secIdx].items[itemIdx].desc = newDesc;
+  MENU[secIdx].items[itemIdx].price = newPrice;
+  saveMenuToStorage();
+  renderMenu();
+  // Log changes
+  const changes = [];
+  if (oldName !== newName) changes.push(`renamed "${oldName}" → "${newName}"`);
+  if (oldPrice !== newPrice) changes.push(`price ${fmt(oldPrice)} → ${fmt(newPrice)}`);
+  if (changes.length) logAction('Menu Item Updated', `${MENU[secIdx].section}: ${changes.join(', ')}`);
+  showToast('Item updated!', 'success');
+}
+
+async function removeMenuItem(secIdx, itemIdx) {
+  const item = MENU[secIdx].items[itemIdx];
+  const ok = await showConfirm('Remove Item?', `Remove "${item.name}" from the menu? This cannot be undone.`);
+  if (!ok) return;
+  const catName = MENU[secIdx].section;
+  logAction('Menu Item Removed', `"${item.name}" removed from ${catName}`);
+  MENU[secIdx].items.splice(itemIdx, 1);
+  saveMenuToStorage();
+  renderMenu();
+  renderMgmtItemsTable();
+  showToast('Item removed.', 'success');
+}
+
+function populateNewItemCatSelect() {
+  const sel = document.getElementById('new-item-cat');
+  if (!sel) return;
+  sel.innerHTML = MENU.map((sec, i) => `<option value="${i}">${sec.section}</option>`).join('');
+}
+
+function addNewMenuItem() {
+  const catIdx = parseInt(document.getElementById('new-item-cat').value, 10);
+  const name = document.getElementById('new-item-name').value.trim();
+  const desc = document.getElementById('new-item-desc').value.trim();
+  const price = parseInt(document.getElementById('new-item-price').value, 10);
+  if (!name) { showToast('Enter a name', 'error'); return; }
+  if (isNaN(price) || price < 0) { showToast('Enter a valid price', 'error'); return; }
+  MENU[catIdx].items.push({ name, desc, price });
+  logAction('Menu Item Added', `"${name}" added to ${MENU[catIdx].section} at ${fmt(price)}`);
+  saveMenuToStorage();
+  renderMenu();
+  renderMgmtItemsTable();
+  document.getElementById('new-item-name').value = '';
+  document.getElementById('new-item-desc').value = '';
+  document.getElementById('new-item-price').value = '';
+  showToast(`"${name}" added!`, 'success');
+}
+
+function renderMgmtCatList() {
+  const el = document.getElementById('mgmt-cat-list');
+  el.innerHTML = MENU.map((sec, i) => `
+    <div class="cat-row">
+      <input class="cat-row-name-input" value="${sec.section}" id="catname-${i}">
+      <span class="cat-item-count">${sec.items.length} item${sec.items.length !== 1 ? 's' : ''}</span>
+      <button class="btn-save-item" onclick="saveCategoryName(${i})">Rename</button>
+      <button class="btn-remove-item" onclick="removeCategory(${i})">Remove</button>
+    </div>
+  `).join('');
+}
+
+function saveCategoryName(idx) {
+  const inp = document.getElementById(`catname-${idx}`);
+  const newName = inp ? inp.value.trim() : '';
+  if (!newName) { showToast('Name cannot be empty', 'error'); return; }
+  const oldName = MENU[idx].section;
+  logAction('Category Renamed', `"${oldName}" → "${newName}"`);
+  MENU[idx].section = newName;
+  saveMenuToStorage();
+  renderMenu();
+  renderMgmtCatTabs();
+  renderMgmtCatList();
+  populateNewItemCatSelect();
+  showToast('Category renamed!', 'success');
+}
+
+async function removeCategory(idx) {
+  const sec = MENU[idx];
+  if (sec.items.length > 0) {
+    const ok = await showConfirm('Remove Category?', `"${sec.section}" has ${sec.items.length} item(s). Removing it will also remove all its items. Continue?`);
+    if (!ok) return;
+  }
+  logAction('Category Removed', `"${sec.section}" and its ${sec.items.length} item(s) removed`);
+  MENU.splice(idx, 1);
+  if (menuCatFilter >= MENU.length) menuCatFilter = 0;
+  saveMenuToStorage();
+  renderMenu();
+  renderMenuMgmt();
+  showToast('Category removed.', 'success');
+}
+
+function addNewCategory() {
+  const inp = document.getElementById('new-cat-name');
+  const name = inp ? inp.value.trim() : '';
+  if (!name) { showToast('Enter a category name', 'error'); return; }
+  if (MENU.some(s => s.section.toLowerCase() === name.toLowerCase())) {
+    showToast('Category already exists', 'error'); return;
+  }
+  MENU.push({ section: name, items: [] });
+  logAction('Category Added', `New category "${name}" created`);
+  if (inp) inp.value = '';
+  saveMenuToStorage();
+  renderMenu();
+  renderMenuMgmt();
+  showToast(`"${name}" category added!`, 'success');
+}
+
+// ── Role Management ──
+function renderRoleMgmt() {
+  const gate = document.getElementById('role-mgmt-gate');
+  const content = document.getElementById('role-mgmt-content');
+  if (!canAccess('owner')) {
+    gate.innerHTML = roleGateHTML('owner');
+    content.style.display = 'none';
+    return;
+  }
+  gate.innerHTML = '';
+  content.style.display = 'flex';
+  renderRolesGrid();
+}
+
+function renderRolesGrid() {
+  const users = loadUsers();
+  const grid = document.getElementById('roles-grid');
+  const permsFor = role => {
+    const all = [
+      { key: 'orders', label: 'Orders', minRole: 'staff' },
+      { key: 'queue', label: 'Queue', minRole: 'staff' },
+      { key: 'reports', label: 'Reports', minRole: 'staff' },
+      { key: 'menu', label: 'Menu Edit', minRole: 'manager' },
+      { key: 'roles', label: 'Role Mgmt', minRole: 'owner' },
+    ];
+    return all.map(p => `<span class="perm-chip${getRoleLevel(role) >= getRoleLevel(p.minRole) ? ' has' : ''}">${p.label}</span>`).join('');
+  };
+  const initials = name => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  const canChangeRole = targetRole => {
+    // owner can change staff/manager, admin can change anyone
+    if (currentUserRole === 'admin') return true;
+    if (currentUserRole === 'owner') return getRoleLevel(targetRole) < getRoleLevel('owner');
+    return false;
+  };
+
+  grid.innerHTML = users.map((u, i) => {
+    const isMe = u.name.toLowerCase() === currentUser.toLowerCase();
+    const canChange = canChangeRole(u.role) && !isMe;
+    const roleOptions = ['staff','manager','owner','admin'].map(r => {
+      // owners can't assign owner/admin via dropdown, admin can
+      const allowed = currentUserRole === 'admin' || getRoleLevel(r) < getRoleLevel('owner');
+      return `<option value="${r}"${r === u.role ? ' selected' : ''}${!allowed ? ' disabled' : ''}>${ROLE_LABELS[r]}</option>`;
+    }).join('');
+    return `<div class="role-card">
+      ${isMe ? '<div class="role-current-you">YOU</div>' : ''}
+      <div class="role-card-header">
+        <div class="role-avatar ${u.role}">${initials(u.name)}</div>
+        <div class="role-card-info">
+          <div class="role-card-name">${u.name}</div>
+          <div class="role-card-email">PIN: ${'•'.repeat(u.pin ? u.pin.length : 4)}</div>
+        </div>
+        <span class="role-badge ${u.role}">${ROLE_LABELS[u.role]}</span>
       </div>
-      <div class="rc-right">
-        <div class="rc-total">${fmt(r.total)}</div>
-        <button class="btn-danger-sm" onclick="confirmDeleteReceipt('${dateKey}', ${r.id})">Remove</button>
+      <div class="role-perms">${permsFor(u.role)}</div>
+      <div class="role-actions-row">
+        ${canChange ? `<select class="role-select" id="role-sel-${i}">${roleOptions}</select>
+          <button class="btn-save-item" onclick="saveUserRole(${i})">Save</button>
+          <button class="btn-remove-item" onclick="removeUser(${i})">Remove</button>` 
+          : `<span style="font-size:11px;color:var(--white-dim);font-style:italic;">${isMe ? 'Cannot change own role' : 'Cannot change this role'}</span>`}
+      </div>
+      <div style="margin-top:8px;">
+        ${canChange ? `<button class="btn btn-ghost" style="font-size:10px;padding:4px 10px;" onclick="changeUserPin(${i})">Change PIN</button>` : ''}
       </div>
     </div>`;
   }).join('');
+}
+
+function saveUserRole(idx) {
+  const sel = document.getElementById(`role-sel-${idx}`);
+  if (!sel) return;
+  const users = loadUsers();
+  const oldRole = users[idx].role;
+  const newRole = sel.value;
+  const userName = users[idx].name;
+  users[idx].role = newRole;
+  saveUsers(users);
+  logAction('Role Changed', `${userName}: ${ROLE_LABELS[oldRole]} → ${ROLE_LABELS[newRole]}`);
+  showToast(`${userName} is now ${ROLE_LABELS[newRole]}`, 'success');
+  renderRolesGrid();
+}
+
+async function removeUser(idx) {
+  const users = loadUsers();
+  const ok = await showConfirm('Remove User?', `Remove "${users[idx].name}" from the system? They will no longer be able to log in with their PIN.`);
+  if (!ok) return;
+  logAction('User Removed', `${users[idx].name} (${ROLE_LABELS[users[idx].role]}) removed from system`);
+  users.splice(idx, 1);
+  saveUsers(users);
+  renderRolesGrid();
+  showToast('User removed.', 'success');
+}
+
+async function changeUserPin(idx) {
+  const users = loadUsers();
+  const name = users[idx].name;
+  // Use a simple prompt for PIN change
+  const newPin = window.prompt(`Enter new 4-digit PIN for ${name}:`);
+  if (newPin === null) return;
+  if (!/^\d{4}$/.test(newPin)) { showToast('PIN must be exactly 4 digits', 'error'); return; }
+  users[idx].pin = newPin;
+  saveUsers(users);
+  logAction('PIN Changed', `${name}'s PIN was updated`);
+  showToast(`PIN updated for ${name}`, 'success');
+}
+
+function addNewUser() {
+  const nameInp = document.getElementById('new-user-name');
+  const roleSel = document.getElementById('new-user-role');
+  const pinInp = document.getElementById('new-user-pin');
+  const name = nameInp ? nameInp.value.trim() : '';
+  const role = roleSel ? roleSel.value : 'staff';
+  const pin = pinInp ? pinInp.value.trim() : '';
+
+  if (!name) { showToast('Enter a name', 'error'); return; }
+  if (!/^\d{4}$/.test(pin)) { showToast('PIN must be exactly 4 digits', 'error'); return; }
+
+  const users = loadUsers();
+  if (users.some(u => u.name.toLowerCase() === name.toLowerCase())) {
+    showToast('A user with that name already exists', 'error'); return;
+  }
+  // Owners can't add owner/admin
+  if (currentUserRole === 'owner' && getRoleLevel(role) >= getRoleLevel('owner')) {
+    showToast('You cannot add Owner or Admin level users', 'error'); return;
+  }
+
+  users.push({ name, role, pin });
+  saveUsers(users);
+  logAction('User Added', `${name} added as ${ROLE_LABELS[role]}`);
+  if (nameInp) nameInp.value = '';
+  if (pinInp) pinInp.value = '';
+  renderRolesGrid();
+  showToast(`${name} added as ${ROLE_LABELS[role]}!`, 'success');
+}
+
+// ── Audit Log ──
+let auditLog = [];
+
+function loadAuditLog() {
+  try { const r = localStorage.getItem('bahama_audit_v2'); if (r) auditLog = JSON.parse(r); } catch(e) {}
+}
+function saveAuditLog() {
+  try { localStorage.setItem('bahama_audit_v2', JSON.stringify(auditLog.slice(0, 200))); } catch(e) {}
+}
+function logAction(action, detail) {
+  const now = new Date();
+  auditLog.unshift({
+    time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    date: now.toLocaleDateString([], { month: 'short', day: 'numeric' }),
+    user: currentUser,
+    role: currentUserRole,
+    action,
+    detail
+  });
+  saveAuditLog();
+}
+function renderAuditLog() {
+  const el = document.getElementById('audit-log-list');
+  const labelEl = document.getElementById('audit-log-label');
+  if (!el) return;
+  // Only show audit log to managers+
+  if (!canAccess('manager')) {
+    if (labelEl) labelEl.style.display = 'none';
+    el.style.display = 'none';
+    return;
+  }
+  if (labelEl) labelEl.style.display = 'block';
+  el.style.display = 'block';
+  if (auditLog.length === 0) {
+    el.innerHTML = '<div class="receipt-empty">No activity recorded yet.</div>';
+    return;
+  }
+  el.innerHTML = auditLog.slice(0, 50).map(e => `
+    <div class="receipt-card" style="gap:10px;">
+      <div style="flex-shrink:0;text-align:center;min-width:52px;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--magenta);">${e.time}</div>
+        <div style="font-size:10px;color:var(--white-dim);">${e.date}</div>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:600;color:var(--white);">${e.action}</div>
+        <div style="font-size:11px;color:var(--white-dim);margin-top:2px;font-style:italic;">${e.detail}</div>
+      </div>
+      <div style="flex-shrink:0;text-align:right;">
+        <span class="role-badge ${e.role}" style="font-size:9px;">${ROLE_LABELS[e.role] || 'Staff'}</span>
+        <div style="font-size:10px;color:var(--white-dim);margin-top:3px;">${e.user}</div>
+      </div>
+    </div>`).join('');
 }
 
 // ── Auto-save queue timer updates ──
@@ -1580,17 +2527,23 @@ setInterval(() => {
 // ── Init on page load (check for already-logged-in user) ──
 window.addEventListener('load', () => {
   const savedUser = localStorage.getItem('posUser');
+  const savedRole = localStorage.getItem('posUserRole');
   if (savedUser) {
     currentUser = savedUser;
+    currentUserRole = savedRole || 'staff';
     document.getElementById('user-display').textContent = savedUser;
+    applyRoleBadge(currentUserRole);
     document.getElementById('login-screen').style.display = 'none';
     loadState();
+    loadAuditLog();
+    loadMenuFromStorage();
     renderMenu();
     renderOrder();
     renderQueue();
     renderShift();
     updateQueueBadge();
     syncDrawer();
+    updateMgmtTabVisibility();
   }
 });
 </script>
