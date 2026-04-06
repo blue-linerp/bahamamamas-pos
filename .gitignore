@@ -1,4 +1,5 @@
-node_modules/
+# Installer downloads (don’t commit)
+GitHubDesktop*.exe
 
 # Local SQLite (recreated when you run npm start)
 data/*
