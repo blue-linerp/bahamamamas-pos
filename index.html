@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="icon" type="image/png" href="BM_Logo.png">
 <title>Bahama Mamas — POS System V2.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Bebas+Neue&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1837,6 +1838,14 @@ function clearSearch() {
 
 // ── Discount ──
 function setDiscType(type) {
+  if (type === 'budz' && !order.some(l => l.partner === 'budz')) {
+    showToast('Block Budz discount only applies to Block Budz items — none in this order!', 'error');
+    return;
+  }
+  if (type === 'requiem' && !order.some(l => l.partner === 'requiem')) {
+    showToast('Sweet Requiem discount only applies to Sweet Requiem items — none in this order!', 'error');
+    return;
+  }
   discType = type;
   ['none','leo','lafd','budz','requiem'].forEach(t => {
     document.getElementById('disc-' + t).classList.toggle('active', t === type);
