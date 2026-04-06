@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
       error: e.message || String(e),
       connectionPreview: maskConnectionString(getConnectionString()),
       hint:
-        'Confirm the password, that the DB allows external SSL connections, and the URL is for pooler/direct as your host requires.',
+        'If this is Supabase pooler: redeploy after pulling latest kv-pg (strips sslmode from URI). Otherwise verify password and use Transaction pooler :6543.',
     });
   }
 };
