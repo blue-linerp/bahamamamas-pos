@@ -1075,8 +1075,8 @@
           <div class="order-title">Current Order</div>
           <div class="disc-banner leo" id="disc-banner-leo">🚔 LEO — 30% discount applied</div>
           <div class="disc-banner lafd" id="disc-banner-lafd">🚨 LAFD — 25% discount applied</div>
-          <div class="disc-banner budz" id="disc-banner-budz">🌿 Block Budz Partner — 20% discount applied</div>
-          <div class="disc-banner requiem" id="disc-banner-requiem">🍦 Sweet Requiem Coupon — 15% discount applied</div>
+          <div class="disc-banner budz" id="disc-banner-budz">🌿 Block Budz Partner — 20% off Block Budz items</div>
+          <div class="disc-banner requiem" id="disc-banner-requiem">🍦 Sweet Requiem Coupon — 15% off Sweet Requiem items</div>
           <div id="order-lines"><div class="order-empty">No items yet — tap menu to add.</div></div>
           <div class="totals" id="totals-block">
             <div id="total-rows"></div>
@@ -1856,7 +1856,13 @@ function computeTotals(items, dType, extraPct) {
   const typePct = DISC_RATES[dType] || 0;
   let typeAmt = 0;
 
-  if (dType === 'requiem') {
+  if (dType === 'budz') {
+    // Only discount Block Budz partner items
+    const budzSubtotal = items
+      .filter(l => l.partner === 'budz')
+      .reduce((s, l) => s + l.qty * l.price, 0);
+    typeAmt = Math.round(budzSubtotal * typePct / 100);
+  } else if (dType === 'requiem') {
     // Only discount Sweet Requiem partner items
     const requiemSubtotal = items
       .filter(l => l.partner === 'requiem')
@@ -1982,7 +1988,7 @@ function renderOrder() {
   let rows = `<div class="total-row"><span>Subtotal</span><span>${fmt(t.subtotal)}</span></div>`;
   if (t.typeAmt > 0) {
     const cls = discType === 'leo' ? 'total-disc-green' : discType === 'lafd' ? 'total-disc-red' : discType === 'requiem' ? 'total-disc-requiem' : 'total-disc-yellow';
-    const label = discType === 'requiem' ? `Sweet Requiem Coupon ${t.typePct}% off` : `${discLabel(discType)} ${t.typePct}% off`;
+    const label = discType === 'budz' ? `Block Budz items ${t.typePct}% off` : discType === 'requiem' ? `Sweet Requiem items ${t.typePct}% off` : `${discLabel(discType)} ${t.typePct}% off`;
     rows += `<div class="total-row ${cls}"><span>${label}</span><span>−${fmt(t.typeAmt)}</span></div>`;
   }
   if (t.extraAmt > 0) rows += `<div class="total-row total-disc-red"><span>Extra ${manualDiscountPct}%</span><span>−${fmt(t.extraAmt)}</span></div>`;
