@@ -1344,6 +1344,10 @@ const DEFAULT_USERS = [
 let MENU = JSON.parse(JSON.stringify(DEFAULT_MENU));
 let menuCatFilter = 0; // index of category shown in mgmt
 
+/** Same-origin http(s): sync to DB (SQLite via local server, or Postgres on Vercel). */
+const DB_SYNC_ENABLED = typeof location !== 'undefined' &&
+  (location.protocol === 'http:' || location.protocol === 'https:');
+
 function loadMenuFromStorage() {
   try {
     const raw = localStorage.getItem('bahama_menu_v2');
@@ -1352,20 +1356,53 @@ function loadMenuFromStorage() {
 }
 function saveMenuToStorage() {
   try { localStorage.setItem('bahama_menu_v2', JSON.stringify(MENU)); } catch(e) {}
+  if (DB_SYNC_ENABLED) void syncMenuToServer();
+}
+
+async function syncMenuToServer() {
+  if (!DB_SYNC_ENABLED) return;
+  try {
+    const r = await fetch('/api/menu', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(MENU)
+    });
+    if (!r.ok) throw new Error('menu sync failed');
+  } catch (e) {}
 }
 
 // ── Users storage ──
+let usersCache = undefined;
+
 function loadUsers() {
+  if (usersCache !== undefined) return usersCache;
   try {
     const raw = localStorage.getItem('bahama_users_v2');
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      usersCache = JSON.parse(raw);
+      return usersCache;
+    }
   } catch(e) {}
-  const d = JSON.parse(JSON.stringify(DEFAULT_USERS));
-  saveUsers(d);
-  return d;
+  usersCache = JSON.parse(JSON.stringify(DEFAULT_USERS));
+  try { localStorage.setItem('bahama_users_v2', JSON.stringify(usersCache)); } catch(e) {}
+  return usersCache;
 }
 function saveUsers(users) {
+  usersCache = users;
   try { localStorage.setItem('bahama_users_v2', JSON.stringify(users)); } catch(e) {}
+  if (DB_SYNC_ENABLED) void syncUsersToServer(users);
+}
+
+async function syncUsersToServer(users) {
+  if (!DB_SYNC_ENABLED) return;
+  try {
+    const r = await fetch('/api/users', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(users)
+    });
+    if (!r.ok) throw new Error('users sync failed');
+  } catch (e) {}
 }
 
 // ── Current session role ──
@@ -1389,6 +1426,8 @@ let queue = [];
 let receipts = [];
 let shiftDateIdx = 0;
 let orderCounter = 0;
+/** Stock / counts by SKU or item key — persisted with orders when DB sync is on. Extend UI later as needed. */
+let inventory = {};
 let searchQuery = '';
 let editId = null;
 let editItems = [];
@@ -1443,7 +1482,7 @@ function login() {
   // Name login always grants Staff access — use PIN login for elevated roles
   currentUser = name;
   currentUserRole = 'staff';
-  finishLogin();
+  void finishLogin();
 }
 
 let loginPinVal = '';
@@ -1475,7 +1514,7 @@ function loginWithPin() {
   document.getElementById('login-pin-error').style.display = 'none';
   currentUser = match.name;
   currentUserRole = match.role;
-  finishLogin();
+  void finishLogin();
 }
 
 function applyRoleBadge(role) {
@@ -1485,7 +1524,7 @@ function applyRoleBadge(role) {
   el.className = 'role-badge ' + (role || 'staff');
 }
 
-function finishLogin() {
+async function finishLogin() {
   localStorage.setItem('posUser', currentUser);
   localStorage.setItem('posUserRole', currentUserRole);
   document.getElementById('user-display').textContent = currentUser;
@@ -1498,6 +1537,7 @@ function finishLogin() {
   loadState();
   loadAuditLog();
   loadMenuFromStorage();
+  await pullFromDatabase();
   renderMenu();
   renderOrder();
   renderQueue();
@@ -1505,6 +1545,7 @@ function finishLogin() {
   updateQueueBadge();
   syncDrawer();
   updateMgmtTabVisibility();
+  renderAuditLog();
   showToast(`Welcome, ${currentUser}! (${ROLE_LABELS[currentUserRole]})`, 'success');
 }
 
@@ -1513,7 +1554,8 @@ function confirmLogout() {
     if (ok) logout();
   });
 }
-function logout() {
+async function logout() {
+  await flushPendingApiSyncs();
   localStorage.removeItem('posUser');
   localStorage.removeItem('posUserRole');
   location.reload();
@@ -1528,20 +1570,179 @@ function updateMgmtTabVisibility() {
 }
 
 // ── Persistence ──
+let stateSyncTimer = null;
+let auditSyncTimer = null;
+let inventorySyncTimer = null;
+
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ queue, receipts, orderCounter }));
   } catch(e) {}
+  if (DB_SYNC_ENABLED) scheduleStateSync();
 }
+
+function scheduleStateSync() {
+  if (!DB_SYNC_ENABLED) return;
+  clearTimeout(stateSyncTimer);
+  stateSyncTimer = setTimeout(() => void syncStateToServer(), 500);
+}
+
+async function syncStateToServer() {
+  if (!DB_SYNC_ENABLED) return;
+  try {
+    const r = await fetch('/api/state', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queue, receipts, orderCounter })
+    });
+    if (!r.ok) throw new Error('state sync failed');
+  } catch (e) {}
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const s = JSON.parse(raw);
-    queue = s.queue || [];
-    receipts = s.receipts || [];
-    orderCounter = s.orderCounter || 0;
+    if (raw) {
+      const s = JSON.parse(raw);
+      queue = s.queue || [];
+      receipts = s.receipts || [];
+      orderCounter = s.orderCounter || 0;
+    }
   } catch(e) {}
+  try {
+    const invRaw = localStorage.getItem('bahama_inventory_v2');
+    if (invRaw) inventory = JSON.parse(invRaw);
+  } catch(e) {}
+}
+
+function saveInventoryLocal() {
+  try { localStorage.setItem('bahama_inventory_v2', JSON.stringify(inventory)); } catch(e) {}
+  if (DB_SYNC_ENABLED) scheduleInventorySync();
+}
+
+function scheduleInventorySync() {
+  if (!DB_SYNC_ENABLED) return;
+  clearTimeout(inventorySyncTimer);
+  inventorySyncTimer = setTimeout(() => void syncInventoryToServer(), 500);
+}
+
+async function syncInventoryToServer() {
+  if (!DB_SYNC_ENABLED) return;
+  try {
+    const r = await fetch('/api/inventory', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(inventory)
+    });
+    if (!r.ok) throw new Error('inventory sync failed');
+  } catch (e) {}
+}
+
+/** Pull menu, staff, queue/receipts, audit, inventory from server (Vercel Postgres or local SQLite API). */
+async function pullFromDatabase() {
+  if (!DB_SYNC_ENABLED) return;
+  let warned = false;
+  const warnOnce = (msg) => {
+    if (warned) return;
+    warned = true;
+    showToast(msg, 'error');
+  };
+  try {
+    const hc = await fetch('/api/health').catch(() => null);
+    if (hc && hc.status !== 404) {
+      const h = await hc.json().catch(() => ({}));
+      if (h.ok === false) warnOnce(h.message || h.error || 'Server health check failed.');
+    }
+
+    const [mr, ur, sr, ar, ir] = await Promise.all([
+      fetch('/api/menu'),
+      fetch('/api/users'),
+      fetch('/api/state'),
+      fetch('/api/audit'),
+      fetch('/api/inventory')
+    ]);
+
+    const readErr = async (r) => {
+      try {
+        const j = await r.json();
+        return j.error || j.message || r.statusText;
+      } catch (e) {
+        return r.statusText || String(r.status);
+      }
+    };
+
+    if (mr.status === 404) warnOnce('GET /api/menu not found — check Vercel deployment includes api/*.js.');
+    else if (!mr.ok && mr.status === 503) warnOnce(await readErr(mr));
+    else if (!mr.ok) warnOnce('Menu sync failed: ' + (await readErr(mr)));
+
+    if (mr.ok) {
+      const menuData = await mr.json();
+      if (Array.isArray(menuData) && menuData.length > 0) {
+        MENU = menuData;
+        try { localStorage.setItem('bahama_menu_v2', JSON.stringify(MENU)); } catch (e) {}
+      }
+    }
+    if (ur.ok) {
+      const userData = await ur.json();
+      if (Array.isArray(userData) && userData.length > 0) {
+        usersCache = userData;
+        try { localStorage.setItem('bahama_users_v2', JSON.stringify(usersCache)); } catch (e) {}
+      }
+    }
+    if (sr.ok) {
+      const st = await sr.json();
+      if (st && typeof st === 'object') {
+        queue = Array.isArray(st.queue) ? st.queue : [];
+        receipts = Array.isArray(st.receipts) ? st.receipts : [];
+        orderCounter = typeof st.orderCounter === 'number' && !Number.isNaN(st.orderCounter) ? st.orderCounter : 0;
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ queue, receipts, orderCounter }));
+        } catch (e) {}
+      }
+    }
+    if (ar.ok) {
+      const ad = await ar.json();
+      if (Array.isArray(ad)) {
+        auditLog = ad;
+        try { localStorage.setItem('bahama_audit_v2', JSON.stringify(auditLog.slice(0, 200))); } catch (e) {}
+      }
+    }
+    if (ir.ok) {
+      const inv = await ir.json();
+      if (inv && typeof inv === 'object' && !Array.isArray(inv)) {
+        inventory = inv;
+        try { localStorage.setItem('bahama_inventory_v2', JSON.stringify(inventory)); } catch (e) {}
+      }
+    }
+  } catch (e) {
+    warnOnce('Could not reach server APIs: ' + (e.message || 'network error'));
+  }
+}
+
+async function flushPendingApiSyncs() {
+  clearTimeout(stateSyncTimer);
+  clearTimeout(auditSyncTimer);
+  clearTimeout(inventorySyncTimer);
+  if (!DB_SYNC_ENABLED) return;
+  try {
+    await Promise.all([
+      fetch('/api/state', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queue, receipts, orderCounter })
+      }),
+      fetch('/api/audit', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(auditLog.slice(0, 200))
+      }),
+      fetch('/api/inventory', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inventory)
+      })
+    ]);
+  } catch (e) {}
 }
 
 // ── Clock ──
@@ -2472,6 +2673,25 @@ function loadAuditLog() {
 }
 function saveAuditLog() {
   try { localStorage.setItem('bahama_audit_v2', JSON.stringify(auditLog.slice(0, 200))); } catch(e) {}
+  if (DB_SYNC_ENABLED) scheduleAuditSync();
+}
+
+function scheduleAuditSync() {
+  if (!DB_SYNC_ENABLED) return;
+  clearTimeout(auditSyncTimer);
+  auditSyncTimer = setTimeout(() => void syncAuditToServer(), 600);
+}
+
+async function syncAuditToServer() {
+  if (!DB_SYNC_ENABLED) return;
+  try {
+    const r = await fetch('/api/audit', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(auditLog.slice(0, 200))
+    });
+    if (!r.ok) throw new Error('audit sync failed');
+  } catch (e) {}
 }
 function logAction(action, detail) {
   const now = new Date();
@@ -2525,7 +2745,7 @@ setInterval(() => {
 }, 30000);
 
 // ── Init on page load (check for already-logged-in user) ──
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   const savedUser = localStorage.getItem('posUser');
   const savedRole = localStorage.getItem('posUserRole');
   if (savedUser) {
@@ -2537,6 +2757,7 @@ window.addEventListener('load', () => {
     loadState();
     loadAuditLog();
     loadMenuFromStorage();
+    await pullFromDatabase();
     renderMenu();
     renderOrder();
     renderQueue();
@@ -2544,6 +2765,7 @@ window.addEventListener('load', () => {
     updateQueueBadge();
     syncDrawer();
     updateMgmtTabVisibility();
+    renderAuditLog();
   }
 });
 </script>
